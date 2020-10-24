@@ -1,0 +1,40 @@
+﻿What does a Checkers domain need?
+
+1.) Each player has a color (red or black)
+
+2.) Each checker has properties
+	a.) A color
+	b.) A rank (normal or king)
+	c.) A position (coordinate on board)
+	d.) Can move again (after capturing an enemy checker)
+		i.) not forced to move
+
+3.) A board has properties
+	a.) Rows
+		i.) List of individual squares
+		ii.) Static member to pull from
+		iii.) Whether or not a KING row
+	b.) Columns
+		i.) List of individual squares
+		ii.) Static member to pull from
+	c.) A dictionary of what pieces lie on which squares
+
+4.) Each square has properties
+	a.) A Row index
+	b.) A Column index
+
+
+	Ideas from Chess implementation
+		1.) There exists a GameState that holds the Board information as well as who is next to Move, and a Message to display to user
+		2.) There needs to be validation for legitimate moves
+			a.) Can use 2 different types and validate an attempt into an actual
+				i.) AttemptedMove
+				ii.) Move
+		3.) Board is a Map<Square, Piece option>
+			a.) Use option type with Result<OK, ERROR>/RailwayProgramming for Move Validation
+
+------------------------------------------------------------
+
+Validation for Move should include:
+
+1.) Alternating colors should 
