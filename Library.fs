@@ -5,7 +5,6 @@ module CheckerTypes =
     type Color = Red | Black    //each checker has a color
     type Rank = Soldier | King  //each checker is either normal or king
     type Checker = Color * Rank
-
     
     (*  Defines layout of the board
         8 [ ] [X] [ ] [X] [ ] [X] [ ] [X]
@@ -18,6 +17,7 @@ module CheckerTypes =
         1 [O] [ ] [O] [ ] [O] [ ] [O] [ ]
            A   B   C   D   E   F   G   H
     *)  
+
     //A column can be any of the following values, and only these values
     type Column = A | B | C | D | E | F | G | H
         with static member List = [A;B;C;D;E;F;G;H]
@@ -25,6 +25,15 @@ module CheckerTypes =
     type Row = One | Two | Three | Four | Five | Six | Seven | Eight
         with static member List = [One; Two; Three; Four; Five; Six; Seven; Eight]
     type Cell = { Column: Column; Row: Row }   //each cell consists of both a row and column
+        with static member (</>) (target: Cell, from: Cell) = 
+                let targetCol = Column.List |> List.findIndex (fun c -> c = target.Column)
+                let fromCol = Column.List |> List.findIndex (fun c -> c = from.Column)
+                let targetRow = Row.List |> List.findIndex (fun r -> r = target.Row)
+                let fromRow= Row.List |> List.findIndex (fun r -> r = from.Row)
+
+                let resultCol = Column.List.[(targetCol + fromCol) / 2]
+                let resultRow = Row.List.[(targetRow + fromRow) / 2]
+                { Column = resultCol; Row = resultRow }
 
     //the board is a dictionary of every cell and a checker MAYBE (some cells will be open)
     //the Cell is the key, and you will retrieve an option type of either the Checker on that space or None
@@ -33,10 +42,8 @@ module CheckerTypes =
 
     //for move validation, use an AttemptedMove -> CompletedMove
     type AttemptedMove = { FromCell: Cell; ToCell: Cell }
-    type Move = { Piece: Checker; FromCell: Cell; ToCell: Cell }
-
-    // TODO Implement HasCaptured
-    type HasCaptured = HasCaptured | HasNotCaptured //checks to see if checker can move again
+    type PieceCapture = NoCapture | Capture
+    type Move = { Piece: Checker; FromCell: Cell; ToCell: Cell; CaptureType: PieceCapture }
 
 
 module Implementation = 
@@ -70,19 +77,17 @@ module Implementation =
 
         let startCell = attemptedMove.FromCell
         let targetCell = attemptedMove.ToCell
-        let checkerToMove = gameState.Board.[startCell]
 
-        match checkerToMove with
+        match gameState.Board.[startCell] with
         | Some (checkerColor, checkerRank) ->
             if checkerColor = gameState.ColorToMove
-            then Ok { Piece = (checkerColor, checkerRank); FromCell = startCell; ToCell = targetCell }
+            then Ok { Piece = (checkerColor, checkerRank); FromCell = startCell; ToCell = targetCell; CaptureType = NoCapture }
             else Error "It's not your turn"
         | None ->
             Error "No piece was selected to move"
 
     //checkers can only move to an empty board space
     let validateMoveToEmptyCell gameState move : Result<Move, string> =
-        let startCell = move.FromCell
         let targetCell = move.ToCell
         let pieceOnTargetCellOpt = gameState.Board.Item targetCell
 
@@ -90,7 +95,7 @@ module Implementation =
         | Some _ ->
             Error "Can't move checker on to an occupied Cell"
         | None ->
-            Ok { Piece = move.Piece; FromCell = move.FromCell; ToCell = move.ToCell }
+            Ok move
 
     //returns how many cells the move is attempting horizontally
     let getHorizontalDistance startCell targetCell =
@@ -125,7 +130,45 @@ module Implementation =
         | (Black, 1, 1)
         | (Red, 1, -1) 
             -> Ok move
-        | _ -> Error "Checkers can only move diagonally and forward. (Black moves up and to the side. Red moves down and to the side."
+        | _ -> Error "Checkers can only move diagonally and forward 1. (Black moves up and to the side. Red moves down and to the side."
 
-    // TODO Try to validate EITHER a normal move OR a capture move.
+    //checkers can only capture diagonal 2 spaces when capturing
+    let validateCaptureShape gameState move : Result<Move, string> =
+        let (checkerColor, _) = move.Piece
+
+        let xDelta = getHorizontalDistance move.FromCell move.ToCell
+        let yDelta = getVerticalDistance move.FromCell move.ToCell
+
+        match (checkerColor, abs xDelta, yDelta) with
+        | (Black, 2, 2)
+        | (Red, 2, -2)
+            -> Ok move
+        | _ -> Error "Checkers can only capture diagonally and forward 2. (Black moves up and to the side. Red moves down and to the side."
+
+    //when checkers move 2 spaces, the intermediate diagonal space must have a checker on it of opposing color
+    let validateJumpOverPiece gameState move : Result<Move, string> =
+        let intermediateCell = (</>) move.FromCell move.ToCell
+
+        match (gameState.Board.[intermediateCell]) with
+        | Some (contentColor, _) -> 
+            if gameState.ColorToMove = contentColor
+            then Error "Cannot jump over a friendly checker."
+            else Ok { Piece = move.Piece; FromCell = move.FromCell; ToCell = move.ToCell; CaptureType = Capture }
+        | None -> Error "In order to jump 2 spaces, you must capture an opposing piece."
+
+    //updates board by returning new board with updated piece locations
+    let updateBoard (board: Board) (move: Move) =
+        let isCapture = move.CaptureType
+        match isCapture with
+        | Capture ->
+            board
+                .Add((</>) move.FromCell move.ToCell, None)
+                .Add(move.FromCell, None)
+                .Add(move.ToCell, Some move.Piece)
+        | NoCapture ->
+            board
+                .Add(move.FromCell, None)
+                .Add(move.ToCell, Some move.Piece)
+
+
 
