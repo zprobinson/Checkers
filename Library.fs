@@ -26,14 +26,23 @@ module CheckerTypes =
         with static member List = [One; Two; Three; Four; Five; Six; Seven; Eight]
     type Cell = { Column: Column; Row: Row }   //each cell consists of both a row and column
         with static member (</>) (target: Cell, from: Cell) = 
-                let targetCol = Column.List |> List.findIndex (fun c -> c = target.Column)
-                let fromCol = Column.List |> List.findIndex (fun c -> c = from.Column)
-                let targetRow = Row.List |> List.findIndex (fun r -> r = target.Row)
-                let fromRow= Row.List |> List.findIndex (fun r -> r = from.Row)
+                let resultRow : int =
+                    let result =
+                        Row.List
+                        |> List.zip [0..7]
+                        |> List.filter (fun (index, item) -> item = target.Row || item = from.Row)
+                        |> List.averageBy (fun (index, item) -> (float)index)
+                    (int) result
 
-                let resultCol = Column.List.[(targetCol + fromCol) / 2]
-                let resultRow = Row.List.[(targetRow + fromRow) / 2]
-                { Column = resultCol; Row = resultRow }
+                let resultCol : int = 
+                    let result = 
+                        Column.List
+                        |> List.zip [0..7]
+                        |> List.filter (fun (index, item) -> item = target.Column || item = from.Column)
+                        |> List.averageBy (fun (index, item) -> (float)index)
+                    (int) result
+
+                { Column = Column.List.[resultCol]; Row = Row.List.[resultRow]}
 
     //the board is a dictionary of every cell and a checker MAYBE (some cells will be open)
     //the Cell is the key, and you will retrieve an option type of either the Checker on that space or None
