@@ -27,11 +27,11 @@ module CheckerTypes =
     type Cell = { Column: Column; Row: Row }   //each cell consists of both a row and column
         with static member (</>) (target: Cell, from: Cell) = 
 
-                let findCellIndex list row1 row2 =
+                let findCellIndex list item1 item2 =
                     let result = 
                         list
                         |> List.zip [0..7]
-                        |> List.filter (fun (index, item) -> item = row1 || item = row2)
+                        |> List.filter (fun (index, item) -> item = item1 || item = item2)
                         |> List.averageBy (fun (index, item) -> (float)index)
                     (int) result
 
@@ -91,7 +91,10 @@ module Implementation =
                     (createRow Two      [None; blk_; None; blk_; None; blk_; None; blk_]) @
                     (createRow One      [blk_; None; blk_; None; blk_; None; blk_; None]) )
 
-        { Board = board; ColorToMove= Black; Message = "Lets Play Checkers. Black to move" }
+        { 
+            Board = board; 
+            ColorToMove= Black; 
+            Message = "Lets Play Checkers. Black to move" }
 
     //make sure that the checker that is being moved is the correct color
     let validateCorrectColorTurn gameState (attemptedMove: AttemptedMove) : Result<Move, string> =
@@ -102,7 +105,11 @@ module Implementation =
         match gameState.Board.[startCell] with
         | Some (checkerColor, checkerRank) ->
             if checkerColor = gameState.ColorToMove
-            then Ok { Piece = (checkerColor, checkerRank); FromCell = startCell; ToCell = targetCell; CaptureType = NoCapture }
+            then Ok { 
+                Piece = (checkerColor, checkerRank); 
+                FromCell = startCell; 
+                ToCell = targetCell; 
+                CaptureType = NoCapture }
             else Error "It's not your turn"
         | None ->
             Error "No piece was selected to move"

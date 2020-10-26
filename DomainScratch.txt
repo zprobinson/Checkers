@@ -35,14 +35,45 @@
 
 ------------------------------------------------------------
 
-Validation for Move should include:
+Checker Game Rules used for Validation
 
-1.) Alternating colors should 
-
+1.) Alternating colors should take turns
+	a.) eventually incorporate same color has additional chance to move
+2.) Only move a checker piece on to an empty cell
+3.) Checkers only move 1 space diagonally when not capturing
+4.) Checkers only move 2 spaces diagonally when capturing
+	a.) When capturing a piece, it must be of the opposing color
 
 ------------------------------------------------------------
 
-Algorithm for subtracting cells
+Drawing a particular cell in console
+
+Output = [ ] or [x] or [o]
+
+I need to know:
+1.) Location of checker
+	a.) Column
+	b.) Row
+2.) Piece option
+	a.) Some
+		i.) color of checker
+	b.) None
+
+Board = Map<Cell, Checker option>
+		Cell = {Column = Column; Row = Row}
+		Checker = Color * Rank
+		Color = White | Black
+		Rank = Soldier | King
+
+foreach cell in board
+	foreach col in cell
+		match c with
+		| H -> printfn "[%A]" board.[cell].Color
+		| _ -> printf "[%A]" board.[cell].Color
+
+------------------------------------------------------------
+
+Algorithm for averaging cells
 Assuming validation for diagonal move of 2
 	1.) each cell has a column and row
 	2.) resultColumn = indexof col1 + indexof col2 / 2
