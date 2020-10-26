@@ -7,36 +7,34 @@ open Checkers
 [<EntryPoint>]
 let main argv =
     printfn "Hello World from F#!"
+    printfn ""
 
-    let generateEmptyRow maxRows =
-        [for x in 1..maxRows do
-         yield sprintf " [%d]" x]
+    let gameState =
+        Implementation.initGame()
 
-    let generateColumns maxCols f =
-        [for y in 1..maxCols do
-         yield! f]
+    let board=
+        gameState.Board
 
-    let generateGrid x y= generateColumns y (generateEmptyRow x)
+    let printCheckerboard (board: Board) (cell: Cell) = 
+        match board.[cell] with
+        | Some checker -> 
+            match checker with
+            | Black, Soldier -> " [x]"
+            | Black, King -> " [X]"
+            | Red, Soldier -> " [o]"
+            | Red, King -> " [O]"
+        | None -> " [ ]"
 
-    let findIndexFromList list cell =
-        list |> List.findIndex (fun c -> c = cell)
-        
-    let deserializeCoordinate row col =
-        (findIndexFromList Row.List row, findIndexFromList Column.List col)
+    let printCell = printCheckerboard board
 
     let checkersGrid = 
         [for row in Row.List do
          for col in Column.List do
+         let cell = { Row = row; Column = col }
          match col with
-         | H -> printfn " [%A]" (deserializeCoordinate row col)
-         | _ -> printf " [%A]" (deserializeCoordinate row col) ]
+         | H -> printfn " %s" (printCell cell)
+         | _ -> printf " %s" (printCell cell) ]
 
-    //let testList =
-    //    [for x in 2..4 do
-    //     for y in 2..4 do
-    //     yield (x, y) ]
-
-    //printfn "%A" (generateGrid 8 8)
 
 
 
