@@ -26,23 +26,35 @@ module CheckerTypes =
         with static member List = [One; Two; Three; Four; Five; Six; Seven; Eight]
     type Cell = { Column: Column; Row: Row }   //each cell consists of both a row and column
         with static member (</>) (target: Cell, from: Cell) = 
-                let resultRow : int =
-                    let result =
-                        Row.List
-                        |> List.zip [0..7]
-                        |> List.filter (fun (index, item) -> item = target.Row || item = from.Row)
-                        |> List.averageBy (fun (index, item) -> (float)index)
-                    (int) result
 
-                let resultCol : int = 
+                let findCellIndex list row1 row2 =
                     let result = 
-                        Column.List
+                        list
                         |> List.zip [0..7]
-                        |> List.filter (fun (index, item) -> item = target.Column || item = from.Column)
+                        |> List.filter (fun (index, item) -> item = row1 || item = row2)
                         |> List.averageBy (fun (index, item) -> (float)index)
                     (int) result
 
-                { Column = Column.List.[resultCol]; Row = Row.List.[resultRow]}
+                let resultRow = findCellIndex Row.List target.Row from.Row
+                let resultCol = findCellIndex Column.List target.Column from.Column
+
+                //let resultRow : int =
+                //    let result =
+                //        Row.List
+                //        |> List.zip [0..7]
+                //        |> List.filter (fun (index, item) -> item = target.Row || item = from.Row)
+                //        |> List.averageBy (fun (index, item) -> (float)index)
+                //    (int) result
+
+                //let resultCol : int = 
+                //    let result = 
+                //        Column.List
+                //        |> List.zip [0..7]
+                //        |> List.filter (fun (index, item) -> item = target.Column || item = from.Column)
+                //        |> List.averageBy (fun (index, item) -> (float)index)
+                //    (int) result
+
+                { Column = Column.List.[resultCol]; Row = Row.List.[resultRow] }
 
     //the board is a dictionary of every cell and a checker MAYBE (some cells will be open)
     //the Cell is the key, and you will retrieve an option type of either the Checker on that space or None
