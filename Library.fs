@@ -184,6 +184,15 @@ module Implementation =
             else Ok { Piece = move.Piece; FromCell = move.FromCell; ToCell = move.ToCell; CaptureType = Capture }
         | None -> Error "In order to jump 2 spaces, you must capture an opposing piece."
 
+    //run the attempted move through the validation suite
+    let validateMove (gameState: GameState) (attemptedMove: AttemptedMove) =
+        attemptedMove
+        |> validateCorrectColorTurn gameState
+        |> Result.bind (validateMoveToEmptyCell gameState)
+        |> Result.bind (validateNormalMove gameState)
+        |> Result.bind (validateCaptureShape gameState)
+        |> Result.bind (validateJumpOverPiece gameState)
+    
     //updates board by returning new board with updated piece locations
     let updateBoard (board: Board) (move: Move) =
         let isCapture = move.CaptureType
@@ -197,6 +206,23 @@ module Implementation =
             board
                 .Add(move.FromCell, None)
                 .Add(move.ToCell, Some move.Piece)
+
+    let updatedPlayerTurn color =
+        match color with
+        | Black -> Red
+        | Red -> Black
+    
+    //validates the move and returns a new game state
+    let updateGame (currentState: GameState) (attemptedMove: AttemptedMove) = 
+        let validatedMove = validateMove currentState attemptedMove
+        match validatedMove with
+        | Ok move ->
+            { currentState with
+                    Board = updateBoard currentState.Board move
+                    ColorToMove = updatedPlayerTurn currentState.ColorToMove
+                    Message = "" }
+        | Error msg ->
+            { currentState with Message = msg }
 
 
 
