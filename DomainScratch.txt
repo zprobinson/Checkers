@@ -80,6 +80,19 @@ Bottom Border Builder
 
 ------------------------------------------------------------
 
+Game loop - Recursive function
+
+1.) render board
+2.) write message from GameState object
+3.) receive move input (A3 B4)
+4.) parse input to AttemptedMove
+5.) validate move
+6.) return new GameState object
+7.) clear the console
+8.) return to start
+
+------------------------------------------------------------
+
 Algorithm for averaging cells
 Assuming validation for diagonal move of 2
 	1.) each cell has a column and row
