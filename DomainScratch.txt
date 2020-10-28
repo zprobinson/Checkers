@@ -73,6 +73,13 @@ foreach cell in board
 
 ------------------------------------------------------------
 
+Bottom Border Builder
+
+<padding> + repeated "___ " + "\n" +
+<padding> + repeated " %A  " + "\n\n"
+
+------------------------------------------------------------
+
 Algorithm for averaging cells
 Assuming validation for diagonal move of 2
 	1.) each cell has a column and row
