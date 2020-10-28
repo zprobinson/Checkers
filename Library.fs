@@ -190,8 +190,8 @@ module Implementation =
         |> validateCorrectColorTurn gameState
         |> Result.bind (validateMoveToEmptyCell gameState)
         |> Result.bind (validateNormalMove gameState)
-        |> Result.bind (validateCaptureShape gameState)
-        |> Result.bind (validateJumpOverPiece gameState)
+        //|> Result.bind (validateCaptureShape gameState)
+        //|> Result.bind (validateJumpOverPiece gameState)
     
     //updates board by returning new board with updated piece locations
     let updateBoard (board: Board) (move: Move) =
