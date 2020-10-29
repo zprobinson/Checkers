@@ -145,8 +145,28 @@ module Implementation =
             |> List.findIndex (fun r -> r = targetCell.Row)
         yTargetPos - yStartPos
     
+    let validMoveShape (move: Move) : Result<Move, string> =
+        let (color, rank) = move.Piece
+
+        let x = abs (getHorizontalDistance move.FromCell move.ToCell)
+        let y = getVerticalDistance move.FromCell move.ToCell
+
+        match color with
+        | Black ->
+            match (x, y) with
+            | (1, 1)
+            | (2, 2)
+                -> Ok move
+            | _ -> Error "Black checkers can only move diagonally up and to the side."
+        | Red ->
+            match (x, y) with
+            | (1, -1)
+            | (2, -2)
+                -> Ok move
+            | _ -> Error "Red checkers can only move diagonally down and to the side."
+
     //checkers can only move diagonal 1 space if not capturing
-    let validateNormalMove gameState move : Result<Move, string> =
+    let validateNormalMove move : Result<Move, string> =
         let (checkerColor, checkerRank) = move.Piece
         let startCell = move.FromCell
         let targetCell = move.ToCell
@@ -189,7 +209,8 @@ module Implementation =
         attemptedMove
         |> validateCorrectColorTurn gameState
         |> Result.bind (validateMoveToEmptyCell gameState)
-        |> Result.bind (validateNormalMove gameState)
+        |> Result.bind validMoveShape
+        //|> Result.bind validateNormalMove
         //|> Result.bind (validateCaptureShape gameState)
         //|> Result.bind (validateJumpOverPiece gameState)
     
@@ -207,7 +228,7 @@ module Implementation =
                 .Add(move.FromCell, None)
                 .Add(move.ToCell, Some move.Piece)
 
-    let updatedPlayerTurn color =
+    let updatePlayerTurn color =
         match color with
         | Black -> Red
         | Red -> Black
@@ -219,7 +240,7 @@ module Implementation =
         | Ok move ->
             { currentState with
                     Board = updateBoard currentState.Board move
-                    ColorToMove = updatedPlayerTurn currentState.ColorToMove
+                    ColorToMove = updatePlayerTurn currentState.ColorToMove
                     Message = "" }
         | Error msg ->
             { currentState with Message = msg }

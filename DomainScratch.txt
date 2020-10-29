@@ -46,6 +46,14 @@ Checker Game Rules used for Validation
 
 ------------------------------------------------------------
 
+Validate Move Shape
+1.) Black can only move up and to the side (if not king)
+2.) Red can only move down and to the side (if not king)
+3.) Moves can have a y delta of 1 (if normal) or 2 (if capture)
+4.) Moves can only have an x delta of 1 (if y delta is 1) or 2 (if y delta is 2)
+
+------------------------------------------------------------
+
 Drawing a particular cell in console
 
 Output = [ ] or [x] or [o]
