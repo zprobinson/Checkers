@@ -90,7 +90,8 @@ let rec renderBoard (gameState : GameState) =
 
 [<EntryPoint>]
 let main argv =
-    renderBoard (Implementation.initGame())
+    //renderBoard (Implementation.initGame())
+    renderBoard (Implementation.initMultipleCaptureTest())
 
 
     0 // return an integer exit code
