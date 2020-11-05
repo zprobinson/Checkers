@@ -43,10 +43,10 @@ module Implementation =
                     (createRow Seven    [None; None; None; None; None; None; None; None]) @
                     (createRow Six      [None; None; red_; None; None; None; red_; None]) @
                     (createRow Five     [None; None; None; None; None; None; None; None]) @
-                    (createRow Four     [None; None; red_; None; red_; None; None; None]) @
+                    (createRow Four     [red_; None; red_; None; red_; None; None; None]) @
                     (createRow Three    [None; None; None; None; None; None; None; None]) @
                     (createRow Two      [None; None; red_; None; None; None; None; None]) @
-                    (createRow One      [None; blk_; None; None; None; None; None; None]) )
+                    (createRow One      [None; blk_; None; blk_; None; None; None; None]) )
 
         {
             Board = board;
