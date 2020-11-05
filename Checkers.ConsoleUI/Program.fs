@@ -47,13 +47,18 @@ let splitFullMove (input: string) =
     let result = input.Split(' ')
     match result.Length with
     | 2 -> result
-    | _ -> failwith "incorrect number of moves in your input"
+    | _ -> invalidArg "result" "incorrect number of moves in your input"
 
 let createAttemptedMove (input: string) =
-    let moves = splitFullMove input
-    let start = createCell (moves |> Array.head)
-    let target = createCell (moves |> Array.last)
-    { FromCell = start; ToCell = target }
+    try
+        let moves = splitFullMove input
+        let start = createCell (moves |> Array.head)
+        let target = createCell (moves |> Array.last)
+        { FromCell = start; ToCell = target }
+    with
+    | :? System.ArgumentException ->
+        // default bad attempted move to handle errer
+        { FromCell = { Column = B; Row = One }; ToCell = { Column = B; Row = One } }    
 
 let rec renderBoard (gameState : GameState) =
     printfn "%A\n" gameState.ColorToMove
