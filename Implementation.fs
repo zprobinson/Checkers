@@ -44,11 +44,15 @@ module Implementation =
                 .Add(move.FromCell, None)
                 .Add(move.ToCell, Some move.Piece)
 
-    let updatePlayerTurn color =
-        match color with
-        | Black -> Red
-        | Red -> Black
-    
+    //if there was a capture, keeps the same player's turn.
+    let updatePlayerTurn gameState move =
+        match move.CaptureType with
+        | Capture -> gameState.ColorToMove
+        | NoCapture ->
+            match gameState.ColorToMove with
+            | Black -> Red
+            | Red -> Black
+
     //validates the move and returns a new game state
     let updateGame (currentState: GameState) (attemptedMove: AttemptedMove) = 
         let validatedMove = validateMove currentState attemptedMove
@@ -56,7 +60,7 @@ module Implementation =
         | Ok move ->
             { currentState with
                     Board = updateBoard currentState.Board move
-                    ColorToMove = updatePlayerTurn currentState.ColorToMove
+                    ColorToMove = updatePlayerTurn currentState move
                     Message = "" }
         | Error msg ->
             { currentState with Message = msg }
