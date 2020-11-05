@@ -30,6 +30,29 @@ module Implementation =
             ColorToMove= Black; 
             Message = "Lets Play Checkers. Black to move." }
 
+    let initMultipleCaptureTest() =
+        let red_ = Some (Red, Soldier)
+        let blk_ = Some (Black, Soldier)
+
+        let createRow row pieces =
+            let cells = Column.List |> List.map (fun col -> { Row = row; Column = col })
+            List.zip cells pieces
+
+        let (board: Board) =
+            Map (   (createRow Eight    [None; None; None; None; None; None; None; None]) @
+                    (createRow Seven    [None; None; None; None; None; None; None; None]) @
+                    (createRow Six      [None; None; red_; None; None; None; red_; None]) @
+                    (createRow Five     [None; None; None; None; None; None; None; None]) @
+                    (createRow Four     [None; None; red_; None; red_; None; None; None]) @
+                    (createRow Three    [None; None; None; None; None; None; None; None]) @
+                    (createRow Two      [None; None; red_; None; None; None; None; None]) @
+                    (createRow One      [None; blk_; None; None; None; None; None; None]) )
+
+        {
+            Board = board;
+            ColorToMove = Black;
+            Message = "Test Multiple Captures." }
+
     //updates board by returning new board with updated piece locations
     let updateBoard (board: Board) (move: Move) =
         let isCapture = move.CaptureType
@@ -46,12 +69,18 @@ module Implementation =
 
     //if there was a capture, keeps the same player's turn.
     let updatePlayerTurn gameState move =
-        match move.CaptureType with
-        | Capture -> gameState.ColorToMove
-        | NoCapture ->
+        let changeColor =
             match gameState.ColorToMove with
             | Black -> Red
             | Red -> Black
+        match move.CaptureType with
+        | Capture -> 
+            if validateAdditionalCaptures gameState move then
+                gameState.ColorToMove
+            else 
+                changeColor
+        | NoCapture ->
+            changeColor
 
     //validates the move and returns a new game state
     let updateGame (currentState: GameState) (attemptedMove: AttemptedMove) = 
