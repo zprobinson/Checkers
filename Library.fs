@@ -69,6 +69,7 @@ module CheckerTypes =
 
 module Implementation = 
     open CheckerTypes
+    //open CheckerValidation
 
     let initGame() = 
         let red_ = Some (Red, Soldier)
@@ -190,8 +191,6 @@ module Implementation =
         |> validateCorrectColorTurn gameState
         |> Result.bind (validateMoveToEmptyCell gameState)
         |> Result.bind (validateNormalMove gameState)
-        //|> Result.bind (validateCaptureShape gameState)
-        //|> Result.bind (validateJumpOverPiece gameState)
     
     //updates board by returning new board with updated piece locations
     let updateBoard (board: Board) (move: Move) =

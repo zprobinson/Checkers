@@ -5,10 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="DomainScratch.txt" />
     <Compile Include="Library.fs" />
+    <Compile Include="CheckerTypes.fs" />
+    <Compile Include="CheckerValidation.fs" />
+    <Content Include="DomainScratch.txt" />
   </ItemGroup>
-
-  <ItemGroup />
 
 </Project>
