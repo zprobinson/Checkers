@@ -85,7 +85,7 @@ module CheckerValidation =
             | None -> Error "Rules error.\nIn order to jump 2 spaces, you must capture an opposing piece."
 
     //find 4 Cell options for any cell
-    let findCellOptions (start: Cell) =
+    let findCellOptions (start: Cell) (piece: Checker) =
         let inline (>=<) num (min, max) = num >= min && num <= max
         let findIndex list item = list |> List.findIndex (fun c -> c = item);
         let getOptions col row = 
@@ -94,19 +94,44 @@ module CheckerValidation =
              (col - 2, row + 2); 
              (col - 2, row - 2)]
 
+        let matchRankAndColor startCol endCol (piece: Checker) =
+            let (color, rank) = piece
+            match rank with
+            | King -> true
+            | _ ->
+                match color with
+                | Red -> startCol > endCol
+                | Black -> startCol < endCol
+
+        let (color, rank) = piece;
         let startColIndex = findIndex Column.List start.Column
         let startRowIndex = findIndex Row.List start.Row
         let options = getOptions startColIndex startRowIndex
         options 
         |> List.filter (fun (c, r) -> c >=< (0, 7) && r >=< (0, 7))
+        |> List.filter (fun (c, r) -> matchRankAndColor startColIndex c piece)
         |> List.map (fun (c, r) -> { Column = Column.List.[c]; Row = Row.List.[r] })
 
     //check if current piece has any additional options to take a piece
-    let validateAdditionalCaptures board move =
-        let (pieceColor, pieceType) = move.Piece
-        match pieceType with
-        | Solider -> 1
-        | King ->  2
+    //let validateAdditionalCaptures board move =
+    //    let getIntermediateCell (start: Cell) target = 
+    //        (</>) start target
+    //    let getIntermediateColor board =
+    //        let cell = getIntermediateCell
+    //        let (color, rank) = board.[cell]
+    //        match color with
+    //        | Some Red -> Red
+    //        | Some Black -> Black
+    //        | None -> None
+
+
+    //    let targetCellOptions = findCellOptions move.ToCell move.Piece
+    //    let intermediateCellOptions = 
+    //        targetCellOptions 
+    //        |> List.filter (fun cell -> getIntermediateColor board move.ToCell cell)
+    //    match intermediateCellOptions.Length with
+    //    | 0 -> false
+    //    | _ -> true
 
     //run the attempted move through the validation suite
     let validateMove (gameState: GameState) (attemptedMove: AttemptedMove) =
