@@ -56,7 +56,7 @@ let createAttemptedMove (input: string) =
     { FromCell = start; ToCell = target }
 
 let rec renderBoard (gameState : GameState) =
-    printfn "Checkers in F#!\n"
+    printfn "%A\n" gameState.ColorToMove
     //print checkerboard
     printf "%s" (printBoard gameState.Board)
 

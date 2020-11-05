@@ -69,7 +69,6 @@ module CheckerTypes =
 
 module Implementation = 
     open CheckerTypes
-    //open CheckerValidation
 
     let initGame() = 
         let red_ = Some (Red, Soldier)
@@ -146,51 +145,45 @@ module Implementation =
             |> List.findIndex (fun r -> r = targetCell.Row)
         yTargetPos - yStartPos
     
-    //checkers can only move diagonal 1 space if not capturing
-    let validateNormalMove gameState move : Result<Move, string> =
-        let (checkerColor, checkerRank) = move.Piece
-        let startCell = move.FromCell
-        let targetCell = move.ToCell
+    let validMoveShape (move: Move) : Result<Move, string> =
+        let (color, rank) = move.Piece
 
-        let xDelta = getHorizontalDistance startCell targetCell
-        let yDelta = getVerticalDistance startCell targetCell
+        let x = abs (getHorizontalDistance move.FromCell move.ToCell)
+        let y = getVerticalDistance move.FromCell move.ToCell
 
-        match (checkerColor, abs xDelta, yDelta) with
-        | (Black, 1, 1)
-        | (Red, 1, -1) 
-            -> Ok move
-        | _ -> Error "Invalid move.\nCheckers can only move diagonally and forward 1. \n(Black moves up and to the side. Red moves down and to the side.)"
-
-    //checkers can only capture diagonal 2 spaces when capturing
-    let validateCaptureShape gameState move : Result<Move, string> =
-        let (checkerColor, _) = move.Piece
-
-        let xDelta = getHorizontalDistance move.FromCell move.ToCell
-        let yDelta = getVerticalDistance move.FromCell move.ToCell
-
-        match (checkerColor, abs xDelta, yDelta) with
-        | (Black, 2, 2)
-        | (Red, 2, -2)
-            -> Ok move
-        | _ -> Error "Checkers can only capture diagonally and forward 2. (Black moves up and to the side. Red moves down and to the side."
+        match color with
+        | Black ->
+            match (x, y) with
+            | (1, 1) -> Ok move
+            | (2, 2) -> Ok { move with CaptureType = Capture }
+            | _ -> Error "Black checkers can only move diagonally up and to the side. (1 or 2 spaces)"
+        | Red ->
+            match (x, y) with
+            | (1, -1) -> Ok move
+            | (2, -2) -> Ok { move with CaptureType = Capture }
+            | _ -> Error "Red checkers can only move diagonally down and to the side. (1 or 2 spaces)"
 
     //when checkers move 2 spaces, the intermediate diagonal space must have a checker on it of opposing color
     let validateJumpOverPiece gameState move : Result<Move, string> =
-        let intermediateCell = (</>) move.FromCell move.ToCell
+        if move.CaptureType = NoCapture then
+            Ok move
+        else
+            let intermediateCell = (</>) move.FromCell move.ToCell
 
-        match (gameState.Board.[intermediateCell]) with
-        | Some (contentColor, _) -> 
-            if gameState.ColorToMove = contentColor
-            then Error "Cannot jump over a friendly checker."
-            else Ok { Piece = move.Piece; FromCell = move.FromCell; ToCell = move.ToCell; CaptureType = Capture }
-        | None -> Error "In order to jump 2 spaces, you must capture an opposing piece."
+            match (gameState.Board.[intermediateCell]) with
+            | Some (contentColor, _) -> 
+                if gameState.ColorToMove = contentColor
+                then Error "Cannot jump over a friendly checker."
+                else Ok move
+            | None -> Error "In order to jump 2 spaces, you must capture an opposing piece."
 
     //run the attempted move through the validation suite
     let validateMove (gameState: GameState) (attemptedMove: AttemptedMove) =
         attemptedMove
         |> validateCorrectColorTurn gameState
         |> Result.bind (validateMoveToEmptyCell gameState)
-        |> Result.bind (validateNormalMove gameState)
+        |> Result.bind validMoveShape
+        |> Result.bind (validateJumpOverPiece gameState)
     
     //updates board by returning new board with updated piece locations
     let updateBoard (board: Board) (move: Move) =
@@ -206,7 +199,7 @@ module Implementation =
                 .Add(move.FromCell, None)
                 .Add(move.ToCell, Some move.Piece)
 
-    let updatedPlayerTurn color =
+    let updatePlayerTurn color =
         match color with
         | Black -> Red
         | Red -> Black
@@ -218,7 +211,7 @@ module Implementation =
         | Ok move ->
             { currentState with
                     Board = updateBoard currentState.Board move
-                    ColorToMove = updatedPlayerTurn currentState.ColorToMove
+                    ColorToMove = updatePlayerTurn currentState.ColorToMove
                     Message = "" }
         | Error msg ->
             { currentState with Message = msg }
