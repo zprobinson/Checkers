@@ -84,6 +84,30 @@ module CheckerValidation =
                 else Ok move
             | None -> Error "Rules error.\nIn order to jump 2 spaces, you must capture an opposing piece."
 
+    //find 4 Cell options for any cell
+    let findCellOptions (start: Cell) =
+        let inline (>=<) num (min, max) = num >= min && num <= max
+        let findIndex list item = list |> List.findIndex (fun c -> c = item);
+        let getOptions col row = 
+            [(col + 2, row + 2); 
+             (col + 2, row - 2); 
+             (col - 2, row + 2); 
+             (col - 2, row - 2)]
+
+        let startColIndex = findIndex Column.List start.Column
+        let startRowIndex = findIndex Row.List start.Row
+        let options = getOptions startColIndex startRowIndex
+        options 
+        |> List.filter (fun (c, r) -> c >=< (0, 7) && r >=< (0, 7))
+        |> List.map (fun (c, r) -> { Column = Column.List.[c]; Row = Row.List.[r] })
+
+    //check if current piece has any additional options to take a piece
+    let validateAdditionalCaptures board move =
+        let (pieceColor, pieceType) = move.Piece
+        match pieceType with
+        | Solider -> 1
+        | King ->  2
+
     //run the attempted move through the validation suite
     let validateMove (gameState: GameState) (attemptedMove: AttemptedMove) =
         attemptedMove
