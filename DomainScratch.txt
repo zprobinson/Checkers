@@ -140,6 +140,23 @@ example #3 e5 c3	(king checker capture)
 ------------------------------------------------------------
 
 Algorithm for finding potential cell options for capture
+and how to decide whose turn it is afterwards
 
 1.) find target cell
-2.) use
+2.) convert to indices of static Lists
+3.) find 4 new cells based on the integers
+4.) filter out those which go past the max index of either array
+5.) convert back to a list of Cells
+
+We have a list of all possible legitimate cells that we could perform
+a capture to get to. Validate the potential moves to see if any exist.
+
+6.) Foreach Cell in list, perform validation
+7.) Filter out moves that would cause errors.
+
+All of the cells left in List will be valid moves. If there was a capture
+and there are still potential future captures, it stays the piece colors turn
+
+8.) Match list with
+	a.) Any items -> color is same as piece
+	b.) No items -> no valid additional moves, next players turn.
