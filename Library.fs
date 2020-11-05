@@ -158,7 +158,7 @@ module Implementation =
         | (Black, 1, 1)
         | (Red, 1, -1) 
             -> Ok move
-        | _ -> Error "Checkers can only move diagonally and forward 1. (Black moves up and to the side. Red moves down and to the side."
+        | _ -> Error "Invalid move.\nCheckers can only move diagonally and forward 1. \n(Black moves up and to the side. Red moves down and to the side.)"
 
     //checkers can only capture diagonal 2 spaces when capturing
     let validateCaptureShape gameState move : Result<Move, string> =
