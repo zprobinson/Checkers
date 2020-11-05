@@ -136,3 +136,10 @@ example #3 e5 c3	(king checker capture)
 		resultCol = 3
 	3.) resultRow = (4, 2) / 2
 		resultRow = 3
+
+------------------------------------------------------------
+
+Algorithm for finding potential cell options for capture
+
+1.) find target cell
+2.) use
