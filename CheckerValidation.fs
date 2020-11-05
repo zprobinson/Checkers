@@ -123,13 +123,15 @@ module CheckerValidation =
     //check if current piece has any additional options to take a piece
     let validateAdditionalCaptures gameState move =
         //let board = gameState.Board
-        //let (color, rank) = move.Piece
+        let (color, rank) = move.Piece
         let targetCellOptions = findCellOptions move.ToCell move.Piece
         let resultOptions =
             targetCellOptions
             |> List.map (fun cell -> { FromCell = move.ToCell; ToCell = cell })
             |> List.map (fun attemptedMove -> validateMove gameState attemptedMove)
-            |> List.filter (fun result -> match result with | Ok -> true | Error -> false)
+            //|> List.filter (fun result -> match result with | Ok -> true | Error -> false)
+
+        failwithf "%A" resultOptions
 
         match resultOptions.Length with
         | 0 -> false

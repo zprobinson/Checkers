@@ -160,3 +160,6 @@ and there are still potential future captures, it stays the piece colors turn
 8.) Match list with
 	a.) Any items -> color is same as piece
 	b.) No items -> no valid additional moves, next players turn.
+
+------------------------------------------------------------
+
