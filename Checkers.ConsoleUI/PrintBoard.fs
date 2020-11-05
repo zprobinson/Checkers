@@ -1,6 +1,5 @@
 ﻿module PrintBoard
 
-open Checkers
 open Checkers.CheckerTypes
 
 let private getCellValue (board: Board) (cell: Cell) = 

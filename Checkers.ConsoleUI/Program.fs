@@ -62,6 +62,7 @@ let createAttemptedMove (input: string) =
 
 let rec renderBoard (gameState : GameState) =
     printfn "%As turn to move.\n" gameState.ColorToMove
+
     //print checkerboard
     printf "%s" (printBoard gameState.Board)
 
