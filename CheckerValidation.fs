@@ -112,27 +112,6 @@ module CheckerValidation =
         |> List.filter (fun (c, r) -> matchRankAndColor startColIndex c piece)
         |> List.map (fun (c, r) -> { Column = Column.List.[c]; Row = Row.List.[r] })
 
-    //check if current piece has any additional options to take a piece
-    //let validateAdditionalCaptures board move =
-    //    let getIntermediateCell (start: Cell) target = 
-    //        (</>) start target
-    //    let getIntermediateColor board =
-    //        let cell = getIntermediateCell
-    //        let (color, rank) = board.[cell]
-    //        match color with
-    //        | Some Red -> Red
-    //        | Some Black -> Black
-    //        | None -> None
-
-
-    //    let targetCellOptions = findCellOptions move.ToCell move.Piece
-    //    let intermediateCellOptions = 
-    //        targetCellOptions 
-    //        |> List.filter (fun cell -> getIntermediateColor board move.ToCell cell)
-    //    match intermediateCellOptions.Length with
-    //    | 0 -> false
-    //    | _ -> true
-
     //run the attempted move through the validation suite
     let validateMove (gameState: GameState) (attemptedMove: AttemptedMove) =
         attemptedMove
@@ -140,3 +119,18 @@ module CheckerValidation =
         |> Result.bind (validateMoveToEmptyCell gameState)
         |> Result.bind validMoveShape
         |> Result.bind (validateJumpOverPiece gameState)
+
+    //check if current piece has any additional options to take a piece
+    let validateAdditionalCaptures gameState move =
+        //let board = gameState.Board
+        //let (color, rank) = move.Piece
+        let targetCellOptions = findCellOptions move.ToCell move.Piece
+        let resultOptions =
+            targetCellOptions
+            |> List.map (fun cell -> { FromCell = move.ToCell; ToCell = cell })
+            |> List.map (fun attemptedMove -> validateMove gameState attemptedMove)
+            |> List.filter (fun result -> match result with | Ok -> true | Error -> false)
+
+        match resultOptions.Length with
+        | 0 -> false
+        | _ -> true
