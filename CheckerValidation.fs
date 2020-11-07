@@ -136,14 +136,14 @@ module CheckerValidation =
         let startColIndex = findIndex Column.List start.Column
         let startRowIndex = findIndex Row.List start.Row
         let options = getOptions startColIndex startRowIndex
-        options 
-        |> List.filter (fun (c, r) -> c >=< (0, 7) && r >=< (0, 7))
-        |> List.filter (fun (c, r) -> matchRankAndColor startColIndex r piece)
-        |> List.map (fun (c, r) -> { Column = Column.List.[c]; Row = Row.List.[r] })
+        options                                                                                 // take all 4 cell options
+        |> List.filter (fun (col, row) -> col >=< (0, 7) && row >=< (0, 7))                     // remove options that exceed game board boundaries
+        |> List.filter (fun (col, row) -> matchRankAndColor startRowIndex row piece)            // remove options based on game rules of where checker can jump to
+        |> List.map (fun (col, row) -> { Column = Column.List.[col]; Row = Row.List.[row] })    // map remaining options on to a Cell list
 
     //kings a piece
     let validatePiecePromotion move =
-        let (color, rank) = move.Piece
+        let color = fst move.Piece
         match color with
         | Red ->
             match move.ToCell.Row with
