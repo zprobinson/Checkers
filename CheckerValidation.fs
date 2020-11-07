@@ -68,8 +68,14 @@ module CheckerValidation =
             let target = list |> List.findIndex (fun i -> i = dimension2)
             target - start
 
-        let x = abs (getDistance Column.List move.FromCell.Column move.ToCell.Column)
-        let y = getDistance Row.List move.FromCell.Row move.ToCell.Row
+        let startCell = move.FromCell
+        let endCell = move.ToCell
+
+        let getXDistance = getDistance Column.List
+        let getYDistance = getDistance Row.List
+
+        let x = abs (getXDistance startCell.Column endCell.Column)
+        let y = getYDistance startCell.Row endCell.Row
 
         let (color, rank) = move.Piece
 
@@ -124,7 +130,7 @@ module CheckerValidation =
              (col - 2, row + 2); 
              (col - 2, row - 2)]
 
-        let matchRankAndColor startRow endRow (piece: Checker) =
+        let matchRankAndColor startRow endRow =
             let (color, rank) = piece
             match rank with
             | King -> true
@@ -133,12 +139,12 @@ module CheckerValidation =
                 | Red -> startRow > endRow
                 | Black -> startRow < endRow
 
-        let startColIndex = findIndex Column.List start.Column
-        let startRowIndex = findIndex Row.List start.Row
-        let options = getOptions startColIndex startRowIndex
+        let startCol = findIndex Column.List start.Column
+        let startRow = findIndex Row.List start.Row
+        let options = getOptions startCol startRow
         options                                                                                 // take all 4 cell options
-        |> List.filter (fun (col, row) -> col >=< (0, 7) && row >=< (0, 7))                     // remove options that exceed game board boundaries
-        |> List.filter (fun (col, row) -> matchRankAndColor startRowIndex row piece)            // remove options based on game rules of where checker can jump to
+        |> List.filter (fun (col, row) -> col >=< (0, 7) && row >=< (0, 7) )                    // remove options that exceed game board boundaries
+        |> List.filter (fun (col, endRow) -> matchRankAndColor startRow endRow )                // remove options based on game rules of where checker can jump to
         |> List.map (fun (col, row) -> { Column = Column.List.[col]; Row = Row.List.[row] })    // map remaining options on to a Cell list
 
     //kings a piece
