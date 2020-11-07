@@ -36,7 +36,6 @@ module Implementation =
             changeColor
 
     //validates the move and returns a new game state
-    //refactor
     let updateGame (currentState: GameState) (attemptedMove: AttemptedMove) = 
         //check if current gamestate is a completed game
         let validatedGameState = validateEndOfGame currentState
