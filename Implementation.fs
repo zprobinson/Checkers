@@ -53,6 +53,30 @@ module Implementation =
             ColorToMove = Black;
             Message = "Test Multiple Captures." }
 
+    let initWinConditionTest() =
+        let red_ = Some (Red, Soldier)
+        let blk_ = Some (Black, Soldier)
+
+        let createRow row pieces =
+            let cells = Column.List |> List.map (fun col -> { Row = row; Column = col })
+            List.zip cells pieces
+        
+        let (board: Board) =
+            Map (   (createRow Eight    [None; None; None; None; None; None; None; None]) @
+                    (createRow Seven    [None; None; None; None; None; None; None; None]) @
+                    (createRow Six      [None; None; None; None; None; None; None; None]) @
+                    (createRow Five     [None; None; None; None; None; None; None; None]) @
+                    (createRow Four     [None; None; None; None; None; None; None; None]) @
+                    (createRow Three    [None; None; None; None; None; None; None; None]) @
+                    (createRow Two      [None; None; red_; None; None; None; None; None]) @
+                    (createRow One      [None; blk_; None; None; None; None; None; None]) )
+
+        {
+            Board = board;
+            ColorToMove = Black;
+            Message = "Test win condition." }
+
+
     //updates board by returning new board with updated piece locations
     let updateBoard (board: Board) (move: Move) =
         let isCapture = move.CaptureType
