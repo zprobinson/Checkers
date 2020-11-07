@@ -163,3 +163,4 @@ and there are still potential future captures, it stays the piece colors turn
 
 ------------------------------------------------------------
 
+Order for validation

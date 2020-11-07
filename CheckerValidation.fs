@@ -3,6 +3,25 @@ open CheckerTypes
 
 module CheckerValidation = 
 
+    //validate if game is over
+    let validateEndOfGame gameState (move: Move) =
+        let board = gameState.Board
+        let redPieces = 
+            board 
+            |> Map.toList 
+            |> List.filter (fun (_, ch) -> ch = Some (Red, Soldier) || ch = Some (Red, King))
+        let blackPieces = 
+            board 
+            |> Map.toList
+            |> List.filter (fun (_, ch) -> ch = Some (Black, Soldier) || ch = Some (Black, King))
+
+        if redPieces.Length = 0 then
+            Error "Black has won the game."
+        else if blackPieces.Length = 0 then
+            Error "Red has won the game."
+        else
+            Ok move
+
     //make sure that the checker that is being moved is the correct color
     let validateCorrectColorTurn gameState (attemptedMove: AttemptedMove) : Result<Move, string> =
 
@@ -119,6 +138,7 @@ module CheckerValidation =
         |> Result.bind (validateMoveToEmptyCell gameState)
         |> Result.bind validMoveShape
         |> Result.bind (validateJumpOverPiece gameState)
+        |> Result.bind (validateEndOfGame gameState)    // testing
 
     //check if current piece has any additional options to take a piece
     let validateAdditionalCaptures gameState move =
@@ -136,7 +156,7 @@ module CheckerValidation =
             |> List.map (fun cell -> { FromCell = move.ToCell; ToCell = cell })
             |> List.map (fun attemptedMove -> { Piece = (color, rank); FromCell = attemptedMove.FromCell; ToCell = attemptedMove.ToCell; CaptureType = Capture })
             |> List.map (fun move -> validateMoveTest (Ok move))
-            |> List.filter (fun result -> match result with | Ok -> true | Error -> false)
+            |> List.filter (fun result -> match result with | Ok _ -> true | Error _ -> false)
 
         //failwithf "%A" resultOptions
 
