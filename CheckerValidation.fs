@@ -2,43 +2,69 @@
 open CheckerTypes
 
 module CheckerValidation = 
-
-    //validate if game is over
-    let validateEndOfGame gameState (move: Move) =
-        let board = gameState.Board
-        let redPieces = 
-            board 
-            |> Map.toList 
-            |> List.filter (fun (_, ch) -> ch = Some (Red, Soldier) || ch = Some (Red, King))
-        let blackPieces = 
-            board 
-            |> Map.toList
-            |> List.filter (fun (_, ch) -> ch = Some (Black, Soldier) || ch = Some (Black, King))
-
-        if redPieces.Length = 0 then
-            Error "Black has won the game."
-        else if blackPieces.Length = 0 then
-            Error "Red has won the game."
-        else
-            Ok move
-
-    //make sure that the checker that is being moved is the correct color
-    let validateCorrectColorTurn gameState (attemptedMove: AttemptedMove) : Result<Move, string> =
-
-        let startCell = attemptedMove.FromCell
-        let targetCell = attemptedMove.ToCell
-
-        match gameState.Board.[startCell] with
-        | Some (checkerColor, checkerRank) ->
-            if checkerColor = gameState.ColorToMove
-            then Ok { 
-                Piece = (checkerColor, checkerRank); 
-                FromCell = startCell; 
-                ToCell = targetCell; 
+    //convert AttemptedMove into Move
+    let convertToMove gameState (attemptedMove: AttemptedMove) =
+        let piece = gameState.Board.[attemptedMove.FromCell]
+        match piece with
+        | Some piece ->
+            Ok {
+                Piece = piece;
+                FromCell = attemptedMove.FromCell;
+                ToCell = attemptedMove.ToCell;
                 CaptureType = NoCapture }
-            else Error "It's not your turn."
         | None ->
             Error "Invalid input.\nNo piece was selected to move."
+
+    //validate if game is over
+    let validateEndOfGame gameState =
+        let findRemaining color =
+            let result = 
+                gameState.Board
+                |> Map.toList
+                |> List.filter (fun (_, ch) -> ch = Some (color, Soldier) || ch = Some (color, King))
+            result.Length
+            
+        let redPieces = findRemaining Red
+        let blackPieces = findRemaining Black
+
+        if redPieces = 0 then
+            { gameState with 
+                ColorToMove = Black
+                Message = "Black has won the game." 
+                GameStatus = Completed }
+        else if blackPieces = 0 then
+            { gameState with 
+                ColorToMove = Red
+                Message = "Red has won the game." 
+                GameStatus = Completed }
+        else gameState
+
+    //player turn
+    let validatePlayerTurn gameState move =
+        let (color, rank) = move.Piece
+        let colorToMove = gameState.ColorToMove
+        if color = colorToMove then 
+            Ok move
+        else 
+            Error "Rules error.\nIt's not your turn."
+
+    //make sure that the checker that is being moved is the correct color
+    //let validateCorrectColorTurn gameState (attemptedMove: AttemptedMove) : Result<Move, string> =
+
+    //    let startCell = attemptedMove.FromCell
+    //    let targetCell = attemptedMove.ToCell
+
+    //    match gameState.Board.[startCell] with
+    //    | Some (checkerColor, checkerRank) ->
+    //        if checkerColor = gameState.ColorToMove
+    //        then Ok { 
+    //            Piece = (checkerColor, checkerRank); 
+    //            FromCell = startCell; 
+    //            ToCell = targetCell; 
+    //            CaptureType = NoCapture }
+    //        else Error "It's not your turn."
+    //    | None ->
+    //        Error "Invalid input.\nNo piece was selected to move."
 
     //checkers can only move to an empty board space
     let validateMoveToEmptyCell gameState move : Result<Move, string> =
@@ -113,32 +139,31 @@ module CheckerValidation =
              (col - 2, row + 2); 
              (col - 2, row - 2)]
 
-        let matchRankAndColor startCol endCol (piece: Checker) =
+        let matchRankAndColor startRow endRow (piece: Checker) =
             let (color, rank) = piece
             match rank with
             | King -> true
             | _ ->
                 match color with
-                | Red -> startCol > endCol
-                | Black -> startCol < endCol
+                | Red -> startRow > endRow
+                | Black -> startRow < endRow
 
-        let (color, rank) = piece;
         let startColIndex = findIndex Column.List start.Column
         let startRowIndex = findIndex Row.List start.Row
         let options = getOptions startColIndex startRowIndex
         options 
         |> List.filter (fun (c, r) -> c >=< (0, 7) && r >=< (0, 7))
-        |> List.filter (fun (c, r) -> matchRankAndColor startColIndex c piece)
+        |> List.filter (fun (c, r) -> matchRankAndColor startColIndex r piece)
         |> List.map (fun (c, r) -> { Column = Column.List.[c]; Row = Row.List.[r] })
 
     //run the attempted move through the validation suite
     let validateMove (gameState: GameState) (attemptedMove: AttemptedMove) =
         attemptedMove
-        |> validateCorrectColorTurn gameState
+        |> convertToMove gameState
+        |> Result.bind (validatePlayerTurn gameState)
         |> Result.bind (validateMoveToEmptyCell gameState)
         |> Result.bind validMoveShape
         |> Result.bind (validateJumpOverPiece gameState)
-        |> Result.bind (validateEndOfGame gameState)    // testing
 
     //check if current piece has any additional options to take a piece
     let validateAdditionalCaptures gameState move =
@@ -148,9 +173,11 @@ module CheckerValidation =
             |> Result.bind validMoveShape
             |> Result.bind (validateJumpOverPiece gameState)
 
-        //let board = gameState.Board
         let (color, rank) = move.Piece
         let targetCellOptions = findCellOptions move.ToCell move.Piece
+
+        //failwithf "%A" targetCellOptions 
+
         let resultOptions =
             targetCellOptions
             |> List.map (fun cell -> { FromCell = move.ToCell; ToCell = cell })

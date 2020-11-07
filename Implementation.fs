@@ -28,7 +28,8 @@ module Implementation =
         { 
             Board = board; 
             ColorToMove= Black; 
-            Message = "Lets Play Checkers. Black to move." }
+            Message = "Lets Play Checkers. Black to move." 
+            GameStatus = InProgress }
 
     let initMultipleCaptureTest() =
         let red_ = Some (Red, Soldier)
@@ -41,17 +42,18 @@ module Implementation =
         let (board: Board) =
             Map (   (createRow Eight    [None; None; None; None; None; None; None; None]) @
                     (createRow Seven    [None; None; None; None; None; None; None; None]) @
-                    (createRow Six      [None; None; red_; None; None; None; red_; None]) @
+                    (createRow Six      [None; None; red_; None; None; None; None; None]) @
                     (createRow Five     [None; None; None; None; None; None; None; None]) @
-                    (createRow Four     [red_; None; red_; None; red_; None; None; None]) @
-                    (createRow Three    [None; None; None; None; None; None; None; None]) @
+                    (createRow Four     [None; None; red_; None; None; None; None; None]) @
+                    (createRow Three    [None; None; None; None; None; None; None; red_]) @
                     (createRow Two      [None; None; red_; None; None; None; None; None]) @
-                    (createRow One      [None; blk_; None; blk_; None; None; None; None]) )
+                    (createRow One      [None; blk_; None; None; None; blk_; None; None]) )
 
         {
             Board = board;
             ColorToMove = Black;
-            Message = "Test Multiple Captures." }
+            Message = "Test Multiple Captures." 
+            GameStatus = InProgress }
 
     let initWinConditionTest() =
         let red_ = Some (Red, Soldier)
@@ -74,7 +76,8 @@ module Implementation =
         {
             Board = board;
             ColorToMove = Black;
-            Message = "Test win condition." }
+            Message = "Test win condition." 
+            GameStatus = InProgress }
 
 
     //updates board by returning new board with updated piece locations
@@ -108,15 +111,22 @@ module Implementation =
 
     //validates the move and returns a new game state
     let updateGame (currentState: GameState) (attemptedMove: AttemptedMove) = 
-        let validatedMove = validateMove currentState attemptedMove
-        match validatedMove with
-        | Ok move ->
-            { currentState with
-                    Board = updateBoard currentState.Board move
-                    ColorToMove = updatePlayerTurn currentState move
-                    Message = "" }
-        | Error msg ->
-            { currentState with Message = msg }
+        let validatedState = validateEndOfGame currentState
+        match validatedState.GameStatus with
+        | InProgress ->
+            let validatedMove = validateMove currentState attemptedMove
+            match validatedMove with
+            | Ok move ->
+                let newState = 
+                    { currentState with
+                            Board = updateBoard currentState.Board move
+                            ColorToMove = updatePlayerTurn currentState move
+                            Message = "" }
+                validateEndOfGame newState
+            | Error msg ->
+                { currentState with Message = msg }
+        | Completed -> 
+            validatedState
 
 
 
