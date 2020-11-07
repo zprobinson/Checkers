@@ -20,20 +20,23 @@ module Implementation =
 
     //if there was a capture, keeps the same player's turn.
     let updatePlayerTurn gameState move =
+        let currentColor = gameState.ColorToMove
         let changeColor =
             match gameState.ColorToMove with
             | Black -> Red
             | Red -> Black
+
         match move.CaptureType with
         | Capture -> 
             if validateAdditionalCaptures gameState move then
-                gameState.ColorToMove
+                currentColor
             else 
                 changeColor
         | NoCapture ->
             changeColor
 
     //validates the move and returns a new game state
+    //refactor
     let updateGame (currentState: GameState) (attemptedMove: AttemptedMove) = 
         let validatedState = validateEndOfGame currentState
         match validatedState.GameStatus with
