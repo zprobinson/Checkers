@@ -2,7 +2,7 @@
 
 open Checkers.CheckerTypes
 
-let private getCellValue (board: Board) (cell: Cell) = 
+let private printCell (board: Board) (cell: Cell) = 
     match board.[cell] with
         | Some checker -> 
             match checker with
@@ -12,15 +12,13 @@ let private getCellValue (board: Board) (cell: Cell) =
             | Red, King -> " [O]"
         | None -> " [ ]"
 
-let private printCell = getCellValue
-
-let private printRowLabel (row: Row) list =
-    sprintf " %d | " ((list |> List.findIndex(fun r -> r = row)) + 1)
+let private printRowLabel (row: Row) =
+    sprintf " %d | " ((Row.List |> List.findIndex(fun r -> r = row)) + 1)
 
 let private checkerBoardList board = 
     let rowRev = Row.List |> List.rev
     [for row in rowRev do
-        printRowLabel row Row.List
+        printRowLabel row
         for col in Column.List do
             let cell = printCell board ({ Row = row; Column = col }) 
             match col with
