@@ -38,22 +38,24 @@ module Implementation =
     //validates the move and returns a new game state
     //refactor
     let updateGame (currentState: GameState) (attemptedMove: AttemptedMove) = 
-        let validatedState = validateEndOfGame currentState
-        match validatedState.GameStatus with
+        //check if current gamestate is a completed game
+        let validatedGameState = validateEndOfGame currentState
+        let validateMoveCurried = validateMove validatedGameState
+
+        match validatedGameState.GameStatus with
         | InProgress ->
-            let validatedMove = validateMove currentState attemptedMove
-            match validatedMove with
+            match (validateMoveCurried attemptedMove) with
             | Ok move ->
-                let newState = 
+                //check if last move ended the game and update message
+                validateEndOfGame
                     { currentState with
-                            Board = updateBoard currentState.Board move
-                            ColorToMove = updatePlayerTurn currentState move
-                            Message = "" }
-                validateEndOfGame newState
+                        Board = updateBoard currentState.Board move
+                        ColorToMove = updatePlayerTurn currentState move
+                        Message = "" }
             | Error msg ->
                 { currentState with Message = msg }
         | Completed -> 
-            validatedState
+            validatedGameState
 
 
 
