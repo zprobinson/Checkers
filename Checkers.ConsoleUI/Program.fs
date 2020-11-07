@@ -24,17 +24,17 @@ let createCell (input: string) : Cell =
             let row = mapToRow (chars |> Array.last)
             { Column = col; Row = row }
         with
-            | :? System.ArgumentException -> 
-                { Column = B; Row = One }   // default bad square to handle error
+            // default bad square to handle error
+            | :? System.ArgumentException
             | :? System.Collections.Generic.KeyNotFoundException ->
-                { Column = B; Row = One }   // default bad square to handle error
-    else { Column = B; Row = One }  // default bad  square to handle error
+                { Column = B; Row = One }   
+    else raise (System.ArgumentException("Input length much be exactly 2 to create a cell.")) 
 
 let splitFullMove (input: string) =
     let result = input.Split(' ')
     match result.Length with
     | 2 -> result
-    | _ -> invalidArg "result" "incorrect number of moves in your input"
+    | _ -> invalidArg "result" "Incorrect number of moves in your input."
 
 let createAttemptedMove (input: string) =
     try
@@ -43,10 +43,11 @@ let createAttemptedMove (input: string) =
         let target = createCell (moves |> Array.last)
         { FromCell = start; ToCell = target }
     with
-    | :? System.ArgumentException ->
-        // default bad attempted move to handle errer
-        { FromCell = { Column = B; Row = One }; ToCell = { Column = B; Row = One } }    
-
+    // default bad attempted move to handle error
+    | :? System.ArgumentException 
+    | :? System.Collections.Generic.KeyNotFoundException ->
+        { FromCell = { Column = B; Row = One }; ToCell = { Column = B; Row = One } }   
+        
 let rec renderBoard (gameState : GameState) =
     printfn "%As turn to move.\n" gameState.ColorToMove
 
@@ -73,7 +74,6 @@ let rec renderBoard (gameState : GameState) =
 
     //call this method
     renderBoard newGameState
-
 
 [<EntryPoint>]
 let main argv =
