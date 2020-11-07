@@ -6,18 +6,6 @@ module CheckerTypes =
     type Rank = Soldier | King  //each checker is either normal or king
     type Checker = Color * Rank
 
-    (*  Defines layout of the board
-        8 [ ] [X] [ ] [X] [ ] [X] [ ] [X]
-        7 [X] [ ] [X] [ ] [X] [ ] [X] [ ]
-        6 [ ] [X] [ ] [X] [ ] [X] [ ] [X]
-        5 [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ]
-        4 [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ]
-        3 [O] [ ] [O] [ ] [O] [ ] [O] [ ]
-        2 [ ] [O] [ ] [O] [ ] [O] [ ] [O]
-        1 [O] [ ] [O] [ ] [O] [ ] [O] [ ]
-           A   B   C   D   E   F   G   H
-    *)  
-
     //A column can be any of the following values, and only these values
     type Column = A | B | C | D | E | F | G | H
         with static member List = [A;B;C;D;E;F;G;H]
@@ -59,7 +47,8 @@ module CheckerTypes =
     //the board is a dictionary of every cell and a checker MAYBE (some cells will be open)
     //the Cell is the key, and you will retrieve an option type of either the Checker on that space or None
     type Board = Map<Cell, Checker option>
-    type GameState = { Board: Board; ColorToMove: Color; Message: string }
+    type GameStatus = InProgress | Completed
+    type GameState = { Board: Board; ColorToMove: Color; Message: string; GameStatus: GameStatus}
 
     //for move validation, use an AttemptedMove -> CompletedMove
     type AttemptedMove = { FromCell: Cell; ToCell: Cell }
