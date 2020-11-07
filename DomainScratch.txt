@@ -164,3 +164,9 @@ and there are still potential future captures, it stays the piece colors turn
 ------------------------------------------------------------
 
 Order for validation
+
+1.) End of game
+2.) Checker selected
+3.) Player turn
+4.) Validate move shape
+5.) Validate potential capture
