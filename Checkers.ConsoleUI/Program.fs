@@ -7,40 +7,26 @@ open Implementation
 open Initialization
 open PrintBoard
 
-let mapCharToRow c =
-    match c with
-    | '1' -> One
-    | '2' -> Two
-    | '3' -> Three
-    | '4' -> Four
-    | '5' -> Five
-    | '6' -> Six
-    | '7' -> Seven
-    | '8' -> Eight
-    | _ -> invalidArg "c" "a row input does not exist"
-    
-let mapCharToCol c =
-    match Char.ToLower(c) with
-    | 'a' -> A
-    | 'b' -> B
-    | 'c' -> C
-    | 'd' -> D
-    | 'e' -> E
-    | 'f' -> F
-    | 'g' -> G
-    | 'h' -> H
-    | _ -> invalidArg "c" "a column input does not exist"
+let mapCharToDimension dList (cList: char list) (c: char) =
+    dList
+    |> List.zip cList
+    |> Map.ofList
+    |> Map.find c
 
 let createCell (input: string) : Cell =
     let flag = input.Length = 2
+    let mapToRow = mapCharToDimension Row.List ['1'..'8']
+    let mapToCol = mapCharToDimension Column.List ['a'..'h']
     if flag then
         try
             let chars = input.ToCharArray()
-            let col = mapCharToCol (chars |> Array.head)
-            let row = mapCharToRow (chars |> Array.last)
+            let col = mapToCol (chars |> Array.head)
+            let row = mapToRow (chars |> Array.last)
             { Column = col; Row = row }
         with
             | :? System.ArgumentException -> 
+                { Column = B; Row = One }   // default bad square to handle error
+            | :? System.Collections.Generic.KeyNotFoundException ->
                 { Column = B; Row = One }   // default bad square to handle error
     else { Column = B; Row = One }  // default bad  square to handle error
 
