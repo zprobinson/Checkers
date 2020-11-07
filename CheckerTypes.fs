@@ -8,7 +8,7 @@ module CheckerTypes =
 
     //A column can be any of the following values, and only these values
     type Column = A | B | C | D | E | F | G | H
-        with static member List = [A;B;C;D;E;F;G;H]
+        with static member List = [A; B; C; D; E; F; G; H]
     //A row can be any of the following values, and only these values
     type Row = One | Two | Three | Four | Five | Six | Seven | Eight
         with static member List = [One; Two; Three; Four; Five; Six; Seven; Eight]
@@ -24,24 +24,8 @@ module CheckerTypes =
                         |> List.averageBy (fun (index, item) -> (float)index)
                     (int) result
 
-                let resultRow = findCellIndex Row.List target.Row from.Row
                 let resultCol = findCellIndex Column.List target.Column from.Column
-
-                //let resultRow : int =
-                //    let result =
-                //        Row.List
-                //        |> List.zip [0..7]
-                //        |> List.filter (fun (index, item) -> item = target.Row || item = from.Row)
-                //        |> List.averageBy (fun (index, item) -> (float)index)
-                //    (int) result
-
-                //let resultCol : int = 
-                //    let result = 
-                //        Column.List
-                //        |> List.zip [0..7]
-                //        |> List.filter (fun (index, item) -> item = target.Column || item = from.Column)
-                //        |> List.averageBy (fun (index, item) -> (float)index)
-                //    (int) result
+                let resultRow = findCellIndex Row.List target.Row from.Row
 
                 { Column = Column.List.[resultCol]; Row = Row.List.[resultRow] }
 
