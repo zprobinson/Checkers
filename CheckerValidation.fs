@@ -59,18 +59,19 @@ module CheckerValidation =
         | None ->
             Ok move
 
-    //refactor attempt on get distance
-    let getDistance list dimension1 dimension2  = 
-        let start =  list |> List.findIndex (fun i -> i = dimension1)
-        let target = list |> List.findIndex (fun i -> i = dimension2)
-        target - start
-
     //validate if the move follows the rules of checkers
     let validMoveShape (move: Move) =
-        let (color, rank) = move.Piece
+
+        //refactor attempt on get distance
+        let getDistance list dimension1 dimension2  = 
+            let start =  list |> List.findIndex (fun i -> i = dimension1)
+            let target = list |> List.findIndex (fun i -> i = dimension2)
+            target - start
 
         let x = abs (getDistance Column.List move.FromCell.Column move.ToCell.Column)
         let y = getDistance Row.List move.FromCell.Row move.ToCell.Row
+
+        let (color, rank) = move.Piece
 
         match color with
         | Black ->
