@@ -2,18 +2,6 @@
 open CheckerTypes
 
 module CheckerValidation = 
-    //convert AttemptedMove into Move
-    let convertToMove gameState (attemptedMove: AttemptedMove) =
-        let piece = gameState.Board.[attemptedMove.FromCell]
-        match piece with
-        | Some piece ->
-            Ok {
-                Piece = piece;
-                FromCell = attemptedMove.FromCell;
-                ToCell = attemptedMove.ToCell;
-                CaptureType = NoCapture }
-        | None ->
-            Error "Invalid input.\nNo piece was selected to move."
 
     //validate if game is over
     let validateEndOfGame gameState =
@@ -39,69 +27,50 @@ module CheckerValidation =
                 GameStatus = Completed }
         else gameState
 
+    //convert AttemptedMove into Move
+    let convertToMove gameState (attemptedMove: AttemptedMove) =
+        let piece = gameState.Board.[attemptedMove.FromCell]
+        match piece with
+        | Some piece ->
+            Ok {
+                Piece = piece;
+                FromCell = attemptedMove.FromCell;
+                ToCell = attemptedMove.ToCell;
+                CaptureType = NoCapture }
+        | None ->
+            Error "Invalid input.\nNo piece was selected to move."
+    
     //player turn
     let validatePlayerTurn gameState move =
-        let (color, rank) = move.Piece
+        let color = fst move.Piece
         let colorToMove = gameState.ColorToMove
         if color = colorToMove then 
             Ok move
         else 
             Error "Rules error.\nIt's not your turn."
 
-    //make sure that the checker that is being moved is the correct color
-    //let validateCorrectColorTurn gameState (attemptedMove: AttemptedMove) : Result<Move, string> =
-
-    //    let startCell = attemptedMove.FromCell
-    //    let targetCell = attemptedMove.ToCell
-
-    //    match gameState.Board.[startCell] with
-    //    | Some (checkerColor, checkerRank) ->
-    //        if checkerColor = gameState.ColorToMove
-    //        then Ok { 
-    //            Piece = (checkerColor, checkerRank); 
-    //            FromCell = startCell; 
-    //            ToCell = targetCell; 
-    //            CaptureType = NoCapture }
-    //        else Error "It's not your turn."
-    //    | None ->
-    //        Error "Invalid input.\nNo piece was selected to move."
-
     //checkers can only move to an empty board space
     let validateMoveToEmptyCell gameState move : Result<Move, string> =
-        let targetCell = move.ToCell
-        let pieceOnTargetCellOpt = gameState.Board.Item targetCell
+        let cellContent = gameState.Board.Item move.ToCell
 
-        match pieceOnTargetCellOpt with
+        match cellContent with
         | Some _ ->
             Error "Rules error.\nCan't move checker on to an occupied Cell."
         | None ->
             Ok move
 
-    //returns how many cells the move is attempting horizontally
-    let getHorizontalDistance startCell targetCell =
-        let xStartPos = 
-            Column.List
-            |> List.findIndex (fun c -> c = startCell.Column)
-        let xTargetPos =
-            Column.List
-            |> List.findIndex (fun c -> c = targetCell.Column)
-        xTargetPos - xStartPos
+    //refactor attempt on get distance
+    let getDistance list dimension1 dimension2  = 
+        let start =  list |> List.findIndex (fun i -> i = dimension1)
+        let target = list |> List.findIndex (fun i -> i = dimension2)
+        target - start
 
-    //returns how many cells the move is attempting vertically
-    let getVerticalDistance startCell targetCell =
-        let yStartPos = 
-            Row.List
-            |> List.findIndex (fun r -> r = startCell.Row)
-        let yTargetPos =
-            Row.List
-            |> List.findIndex (fun r -> r = targetCell.Row)
-        yTargetPos - yStartPos
-
-    let validMoveShape (move: Move) : Result<Move, string> =
+    //validate if the move follows the rules of checkers
+    let validMoveShape (move: Move) =
         let (color, rank) = move.Piece
 
-        let x = abs (getHorizontalDistance move.FromCell move.ToCell)
-        let y = getVerticalDistance move.FromCell move.ToCell
+        let x = abs (getDistance Column.List move.FromCell.Column move.ToCell.Column)
+        let y = getDistance Row.List move.FromCell.Row move.ToCell.Row
 
         match color with
         | Black ->

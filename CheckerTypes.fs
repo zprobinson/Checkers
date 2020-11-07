@@ -12,6 +12,7 @@ module CheckerTypes =
     //A row can be any of the following values, and only these values
     type Row = One | Two | Three | Four | Five | Six | Seven | Eight
         with static member List = [One; Two; Three; Four; Five; Six; Seven; Eight]
+
     type Cell = { Column: Column; Row: Row }   //each cell consists of both a row and column
         with static member (</>) (target: Cell, from: Cell) = 
 

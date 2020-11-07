@@ -91,8 +91,8 @@ let rec renderBoard (gameState : GameState) =
 
 [<EntryPoint>]
 let main argv =
-    renderBoard (initNewGame())
-    //renderBoard (initMultipleCaptureTest())
+    //renderBoard (initNewGame())
+    renderBoard (initMultipleCaptureTest())
     //renderBoard (initWinConditionTest())
 
 
