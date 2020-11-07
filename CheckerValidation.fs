@@ -50,7 +50,7 @@ module CheckerValidation =
             Error "Rules error.\nIt's not your turn."
 
     //checkers can only move to an empty board space
-    let validateMoveToEmptyCell gameState move : Result<Move, string> =
+    let validateMoveToEmptyCell gameState move =
         let cellContent = gameState.Board.Item move.ToCell
 
         match cellContent with
@@ -100,17 +100,18 @@ module CheckerValidation =
                 | _ -> Error "Invalid input.\nRed checkers can only move diagonally down and to the side. (1 or 2 spaces)"
 
     //when checkers move 2 spaces, the intermediate diagonal space must have a checker on it of opposing color
-    let validateJumpOverPiece gameState move : Result<Move, string> =
+    let validateJumpOverPiece gameState move =
         if move.CaptureType = NoCapture then
             Ok move
         else
             let intermediateCell = (</>) move.FromCell move.ToCell
+            let checker = gameState.Board.[intermediateCell]
 
-            match (gameState.Board.[intermediateCell]) with
-            | Some (contentColor, _) -> 
-                if gameState.ColorToMove = contentColor
-                then Error "Rules error.\nCannot jump over a friendly checker."
-                else Ok move
+            match checker with
+            | Some checker -> 
+                if gameState.ColorToMove <> fst checker
+                then Ok move
+                else Error "Rules error.\nCannot jump over a friendly checker."
             | None -> Error "Rules error.\nIn order to jump 2 spaces, you must capture an opposing piece."
 
     //find 4 Cell options for any cell
