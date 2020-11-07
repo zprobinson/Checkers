@@ -179,13 +179,18 @@ module CheckerValidation =
 
         let resultOptions =
             targetCellOptions
+            //map cell list on to attempted moves
             |> List.map (fun cell -> { FromCell = move.ToCell; ToCell = cell })
+            //map attempted moves on to Moves
             |> List.map (fun attemptedMove -> { Piece = (color, rank); FromCell = attemptedMove.FromCell; ToCell = attemptedMove.ToCell; CaptureType = Capture })
+            //map Moves on to Result<Move, string> using validation
             |> List.map (fun move -> validateMoveTest (Ok move))
+            //remove any Moves that are invalid
             |> List.filter (fun result -> match result with | Ok _ -> true | Error _ -> false)
 
         //failwithf "%A" resultOptions
 
+        //If there are no remaining valid Moves, then false, otherwise true
         match resultOptions.Length with
         | 0 -> false
         | _ -> true
