@@ -1,9 +1,10 @@
 ﻿// Learn more about F# at http://fsharp.org
 
 open System
-open Checkers.CheckerTypes
-open Checkers.Implementation
 open Checkers
+open CheckerTypes
+open Implementation
+open Initialization
 open PrintBoard
 
 let mapCharToRow c =
@@ -90,9 +91,9 @@ let rec renderBoard (gameState : GameState) =
 
 [<EntryPoint>]
 let main argv =
-    //renderBoard (Implementation.initGame())
-    renderBoard (Implementation.initMultipleCaptureTest())
-    //renderBoard (Implementation.initWinConditionTest())
+    renderBoard (initNewGame())
+    //renderBoard (initMultipleCaptureTest())
+    //renderBoard (initWinConditionTest())
 
 
     0 // return an integer exit code
