@@ -105,15 +105,29 @@ module CheckerValidation =
 
         match color with
         | Black ->
-            match (x, y) with
-            | (1, 1) -> Ok move
-            | (2, 2) -> Ok { move with CaptureType = Capture }
-            | _ -> Error "Invalid input.\nBlack checkers can only move diagonally up and to the side. (1 or 2 spaces)"
+            match rank with
+            | King ->
+                match (x, abs y) with
+                | (1, 1) -> Ok move
+                | (2, 2) -> Ok { move with CaptureType = Capture }
+                | _ -> Error "Invalid input.\nBlack King checkers can only move diagonally up/down and to the side. (1 or 2 spaces)"
+            | Soldier ->
+                match (x, y) with
+                | (1, 1) -> Ok move
+                | (2, 2) -> Ok { move with CaptureType = Capture }
+                | _ -> Error "Invalid input.\nBlack checkers can only move diagonally up and to the side. (1 or 2 spaces)"
         | Red ->
-            match (x, y) with
-            | (1, -1) -> Ok move
-            | (2, -2) -> Ok { move with CaptureType = Capture }
-            | _ -> Error "Invalid input.\nRed checkers can only move diagonally down and to the side. (1 or 2 spaces)"
+            match rank with
+            | King ->
+                match (x, abs y) with
+                | (1, 1) -> Ok move
+                | (2, 2) -> Ok { move with CaptureType = Capture }
+                | _ -> Error "Invalid input.\Red King checkers can only move diagonally up/down and to the side. (1 or 2 spaces)"
+            | Soldier -> 
+                match (x, y) with
+                | (1, -1) -> Ok move
+                | (2, -2) -> Ok { move with CaptureType = Capture }
+                | _ -> Error "Invalid input.\nRed checkers can only move diagonally down and to the side. (1 or 2 spaces)"
 
     //when checkers move 2 spaces, the intermediate diagonal space must have a checker on it of opposing color
     let validateJumpOverPiece gameState move : Result<Move, string> =
@@ -156,6 +170,19 @@ module CheckerValidation =
         |> List.filter (fun (c, r) -> matchRankAndColor startColIndex r piece)
         |> List.map (fun (c, r) -> { Column = Column.List.[c]; Row = Row.List.[r] })
 
+    //kings a piece
+    let validatePiecePromotion move =
+        let (color, rank) = move.Piece
+        match color with
+        | Red ->
+            match move.ToCell.Row with
+            | One -> Ok { move with Piece = (Red, King) }
+            | _ -> Ok move
+        | Black -> 
+            match move.ToCell.Row with
+            | Eight -> Ok { move with Piece = (Black, King) }
+            | _ -> Ok move
+    
     //run the attempted move through the validation suite
     let validateMove (gameState: GameState) (attemptedMove: AttemptedMove) =
         attemptedMove
@@ -164,6 +191,7 @@ module CheckerValidation =
         |> Result.bind (validateMoveToEmptyCell gameState)
         |> Result.bind validMoveShape
         |> Result.bind (validateJumpOverPiece gameState)
+        |> Result.bind validatePiecePromotion
 
     //check if current piece has any additional options to take a piece
     let validateAdditionalCaptures gameState move =

@@ -41,13 +41,13 @@ module Implementation =
 
         let (board: Board) =
             Map (   (createRow Eight    [None; None; None; None; None; None; None; None]) @
-                    (createRow Seven    [None; None; None; None; None; None; None; None]) @
-                    (createRow Six      [None; None; red_; None; None; None; None; None]) @
-                    (createRow Five     [None; None; None; None; None; None; None; None]) @
-                    (createRow Four     [None; None; red_; None; None; None; None; None]) @
-                    (createRow Three    [None; None; None; None; None; None; None; red_]) @
-                    (createRow Two      [None; None; red_; None; None; None; None; None]) @
-                    (createRow One      [None; blk_; None; None; None; blk_; None; None]) )
+                    (createRow Seven    [None; None; red_; None; red_; None; None; None]) @
+                    (createRow Six      [None; None; None; None; None; None; None; None]) @
+                    (createRow Five     [None; None; red_; None; None; None; red_; None]) @
+                    (createRow Four     [None; None; None; None; None; None; None; None]) @
+                    (createRow Three    [None; None; red_; None; None; None; None; None]) @
+                    (createRow Two      [None; blk_; None; None; None; None; None; None]) @
+                    (createRow One      [None; None; None; None; None; blk_; None; None]) )
 
         {
             Board = board;
