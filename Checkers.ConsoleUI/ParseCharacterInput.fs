@@ -42,7 +42,3 @@ let createAttemptedMove (input: string) =
     | :? System.ArgumentException 
     | :? System.Collections.Generic.KeyNotFoundException ->
         { FromCell = { Column = B; Row = One }; ToCell = { Column = B; Row = One } }   
-            
-
-
-
