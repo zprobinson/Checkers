@@ -1,8 +1,7 @@
 ﻿namespace Checkers
 
-module Implementation = 
-    open CheckerTypes
-    open CheckerValidation
+module Implementation =
+    open Validation
 
     //updates board by returning new board with updated piece locations
     let updateBoard (board: Board) (move: Move) =
@@ -27,16 +26,16 @@ module Implementation =
             | Red -> Black
 
         match move.CaptureType with
-        | Capture -> 
+        | Capture ->
             if validateAdditionalCaptures gameState move then
                 currentColor
-            else 
+            else
                 changeColor
         | NoCapture ->
             changeColor
 
     //validates the move and returns a new game state
-    let updateGame (currentState: GameState) (attemptedMove: AttemptedMove) = 
+    let updateGame (currentState: GameState) (attemptedMove: AttemptedMove) =
         //check if current gamestate is a completed game
         let validatedGameState = validateEndOfGame currentState
         let validateMoveCurried = validateMove validatedGameState
@@ -53,7 +52,7 @@ module Implementation =
                         Message = "" }
             | Error msg ->
                 { currentState with Message = msg }
-        | Completed -> 
+        | Completed ->
             validatedGameState
 
 

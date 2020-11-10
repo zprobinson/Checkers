@@ -1,8 +1,6 @@
 ﻿namespace Checkers
 
 module Initialization =
-    open CheckerTypes
-
     let red_ = Some (Red, Soldier)
     let blk_ = Some (Black, Soldier)
 
@@ -17,7 +15,7 @@ module Initialization =
 
     let gameStateWithBlackInProgress = returnGameState Black InProgress
 
-    let initNewGame() = 
+    let initNewGame() =
         //initialize board state
         let message = "Lets Play Checkers. Black to move."
         let (board: Board) =
