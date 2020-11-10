@@ -15,7 +15,7 @@ let createCell (input: string) : Cell =
     if flag then
         try
             let chars = input.ToCharArray()
-            let col = mapToCol (chars |> Array.head)
+            let col = mapToCol (chars |> Array.head |> System.Char.ToLower)
             let row = mapToRow (chars |> Array.last)
             { Column = col; Row = row }
         with
