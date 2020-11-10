@@ -21,7 +21,9 @@ type Cell = { Column: Column; Row: Row }
             let findCellIndex list item1 item2 =
                 let result =
                     list
-                    |> List.zip [0..7]
+                    // this is a neat one that does the same logic. But! If you ever decide to increase
+                    // the size of the board, it won't break =)
+                    |> List.indexed
                     |> List.filter (fun (index, item) -> item = item1 || item = item2)
                     // what on earth is happening here? A comment would be extremely helpful as this logic is unusual
                     |> List.averageBy (fun (index, item) -> float index)
