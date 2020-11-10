@@ -1,4 +1,8 @@
 ﻿// single-module files can use this syntax [Namespace].[Module]
+
+// generally you're going to always need the types, so adding an [<AutoOpen>] attribute here
+// saves some keystrokes / headaches in the future
+[<AutoOpen>]
 module Checkers.Types
 
 //Sets properties of any individual Checker
