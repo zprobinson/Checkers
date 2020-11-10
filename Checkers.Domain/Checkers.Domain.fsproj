@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="CheckerTypes.fs" />
+    <Compile Include="Types.fs" />
     <Compile Include="CheckerValidation.fs" />
     <Compile Include="Initialization.fs" />
     <Compile Include="Implementation.fs" />
