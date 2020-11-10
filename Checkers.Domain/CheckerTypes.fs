@@ -44,10 +44,26 @@ type Cell = { Column: Column; Row: Row }
 //the Cell is the key, and you will retrieve an option type of either the Checker on that space or None
 type Board = Map<Cell, Checker option>
 type GameStatus = InProgress | Completed
-type GameState = { Board: Board; ColorToMove: Color; Message: string; GameStatus: GameStatus}
+
+// long records should be separated out instead of being on the same line
+type GameState =
+    {
+        Board: Board
+        ColorToMove: Color
+        Message: string
+        GameStatus: GameStatus
+    }
 
 //for move validation, use an AttemptedMove -> CompletedMove
 type AttemptedMove = { FromCell: Cell; ToCell: Cell }
 type PieceCapture = NoCapture | Capture
-type Move = { Piece: Checker; FromCell: Cell; ToCell: Cell; CaptureType: PieceCapture }
+
+// ditto
+type Move =
+    {
+        Piece: Checker
+        FromCell: Cell
+        ToCell: Cell
+        CaptureType: PieceCapture
+    }
 
