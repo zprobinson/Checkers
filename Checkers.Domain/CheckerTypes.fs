@@ -23,8 +23,12 @@ type Cell = { Column: Column; Row: Row }
                     list
                     |> List.zip [0..7]
                     |> List.filter (fun (index, item) -> item = item1 || item = item2)
-                    |> List.averageBy (fun (index, item) -> (float)index)
-                (int) result
+                    // what on earth is happening here? A comment would be extremely helpful as this logic is unusual
+                    |> List.averageBy (fun (index, item) -> float index)
+                // F# cast operators are :> and :?>. Wrapping int in (int) does nothing other than look weird
+                // In addition, a lot of "casting" C# does isn't actually casting. In this case, F# is doing a
+                // _conversion_ to an int, just like C# would.
+                int result
 
             let resultCol = findCellIndex Column.List target.Column from.Column
             let resultRow = findCellIndex Row.List target.Row from.Row
