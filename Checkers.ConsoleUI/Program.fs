@@ -1,11 +1,12 @@
 ﻿open System
+
 open Checkers
-open CheckerTypes
-open Implementation
-open Initialization
+open Checkers.Implementation
+open Checkers.Initialization
+
 open PrintBoard
 open ParseCharacterInput
-        
+
 let rec renderBoard (gameState : GameState) =
     //print game board and current message
     printfn "%As turn to move.\n" gameState.ColorToMove
@@ -15,7 +16,7 @@ let rec renderBoard (gameState : GameState) =
     //prompt user for input
     printfn "%s" printPrompt
     printf "> "
-    let input = Console.ReadLine()
+    let input = Console.ReadLine().ToLower()
 
     //parse input to AttemptedMove type
     let attempt = createAttemptedMove input
@@ -30,4 +31,4 @@ let main argv =
     renderBoard (initNewGame())
     //renderBoard (initMultipleCaptureTest())
     //renderBoard (initWinConditionTest())
-    0 
+    0
