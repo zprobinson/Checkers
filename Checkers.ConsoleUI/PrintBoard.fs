@@ -40,7 +40,7 @@ let private columnBorderBuilder str list =
 
 let private columnLabelBuilder list =
     list
-    |> Seq.map (sprintf "%A")
+    |> Seq.map (sprintf " %A  ")
     |> String.concat ""
 
 let private bottomBorder =
