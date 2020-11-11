@@ -139,10 +139,18 @@ let findCellOptions (start: Cell) (piece: Checker) =
     let startCol = findIndex Column.List start.Column
     let startRow = findIndex Row.List start.Row
     let options = getOptions startCol startRow
-    options                                                                                 // take all 4 cell options
-    |> List.filter (fun (col, row) -> col >=< (0, 7) && row >=< (0, 7) )                    // remove options that exceed game board boundaries
-    |> List.filter (fun (col, endRow) -> matchRankAndColor startRow endRow )                // remove options based on game rules of where checker can jump to
-    |> List.map (fun (col, row) -> { Column = Column.List.[col]; Row = Row.List.[row] })    // map remaining options on to a Cell list
+
+    // take all 4 cell options
+    options
+
+    // remove options that exceed game board boundaries
+    |> List.filter (fun (col, row) -> col >=< (0, 7) && row >=< (0, 7) )
+
+    // remove options based on game rules of where checker can jump to
+    |> List.filter (fun (col, endRow) -> matchRankAndColor startRow endRow )
+
+    // map remaining options on to a Cell list
+    |> List.map (fun (col, row) -> { Column = Column.List.[col]; Row = Row.List.[row] })
 
 //kings a piece
 // never returns an error, so no point in returning a Result
