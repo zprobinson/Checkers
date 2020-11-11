@@ -22,7 +22,7 @@ let private checkerBoardList board =
             let cell = printCell board ({ Row = row; Column = col })
             match col with
             | H -> sprintf "%s\n" cell
-            | _ -> sprintf "%s"   cell ]
+            | _ -> cell ]
 
 let private checkerBoard board =
     board
@@ -47,8 +47,8 @@ let private bottomBorder =
     bottomPadding 6 + columnLabelBuilder Column.List + "\n\n"
 
 let printBoard (board: Board) =
-    sprintf "%s" (checkerBoard board) +
-    sprintf "%s" bottomBorder
+    (checkerBoard board) +
+    bottomBorder
 
 let printPrompt =
-    sprintf "Please enter moves in the following format: A3 B4 (case insensitive)"
+    "Please enter moves in the following format: A3 B4 (case insensitive)"
