@@ -9,13 +9,11 @@ module Implementation =
         match isCapture with
         | Capture ->
             board
-                .Add(move.FromCell </> move.ToCell, None)
-                .Add(move.FromCell, None)
-                .Add(move.ToCell, Some move.Piece)
+            |> Map.add (move.FromCell </> move.ToCell) None
         | NoCapture ->
             board
-                .Add(move.FromCell, None)
-                .Add(move.ToCell, Some move.Piece)
+        |> Map.add move.FromCell None
+        |> Map.add move.ToCell (Some move.Piece)
 
     //if there was a capture, keeps the same player's turn.
     let updatePlayerTurn gameState move =
