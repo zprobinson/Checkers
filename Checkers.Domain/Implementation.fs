@@ -9,7 +9,7 @@ module Implementation =
         match isCapture with
         | Capture ->
             board
-                .Add((</>) move.FromCell move.ToCell, None)
+                .Add(move.FromCell </> move.ToCell, None)
                 .Add(move.FromCell, None)
                 .Add(move.ToCell, Some move.Piece)
         | NoCapture ->
