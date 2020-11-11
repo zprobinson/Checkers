@@ -31,8 +31,7 @@ let private bottomPadding length =
     String.replicate length " "
 
 let private columnBorderBuilder str list =
-    [for _ in list do
-        sprintf "%s" str]
+    [ for _ in list do yield str ]
     |> List.reduce (+)
 
 let private columnLabelBuilder list =
