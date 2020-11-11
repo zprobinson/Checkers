@@ -145,6 +145,7 @@ let findCellOptions (start: Cell) (piece: Checker) =
     |> List.map (fun (col, row) -> { Column = Column.List.[col]; Row = Row.List.[row] })    // map remaining options on to a Cell list
 
 //kings a piece
+// never returns an error, so no point in returning a Result
 let checkPiecePromotion move =
     let color = fst move.Piece
     match color, move.ToCell.Row with
