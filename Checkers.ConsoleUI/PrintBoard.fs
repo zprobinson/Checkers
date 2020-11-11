@@ -3,13 +3,13 @@ open Checkers
 
 let private printCell (board: Board) (cell: Cell) =
     match board.[cell] with
-        | Some checker ->
-            match checker with
-            | Black, Soldier -> " [x]"
-            | Black, King -> " [X]"
-            | Red, Soldier -> " [o]"
-            | Red, King -> " [O]"
-        | None -> " [ ]"
+    | Some checker ->
+        match checker with
+        | Black, Soldier -> " [x]"
+        | Black, King -> " [X]"
+        | Red, Soldier -> " [o]"
+        | Red, King -> " [O]"
+    | None -> " [ ]"
 
 let private printRowLabel (row: Row) =
     sprintf " %d | " ((Row.List |> List.findIndex(fun r -> r = row)) + 1)
