@@ -1,7 +1,7 @@
-﻿module PrintBoard
+module PrintBoard
 open Checkers
 
-let private printCell (board: Board) (cell: Cell) =
+let private getCellText (board: Board) (cell: Cell) =
     match board.[cell] with
     | Some checker ->
         match checker with
@@ -11,7 +11,7 @@ let private printCell (board: Board) (cell: Cell) =
         | Red, King -> " [O]"
     | None -> " [ ]"
 
-let private printRowLabel (row: Row) =
+let private getRowLabel (row: Row) =
     sprintf " %d | " ((Row.List |> List.findIndex(fun r -> r = row)) + 1)
 
 let private checkerBoardList board =
