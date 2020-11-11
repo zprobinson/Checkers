@@ -35,14 +35,14 @@ module Implementation =
             changeColor
 
     //validates the move and returns a new game state
-    let updateGame (currentState: GameState) (attemptedMove: AttemptedMove) =
+    let updateGame (currentState: GameState) (attemptedMove: Result<AttemptedMove, string>) =
         //check if current gamestate is a completed game
         let validatedGameState = validateEndOfGame currentState
         let validateMoveCurried = validateMove validatedGameState
 
         match validatedGameState.GameStatus with
         | InProgress ->
-            match (validateMoveCurried attemptedMove) with
+            match Result.bind validateMoveCurried attemptedMove with
             | Ok move ->
                 //check if last move ended the game and update message
                 validateEndOfGame
