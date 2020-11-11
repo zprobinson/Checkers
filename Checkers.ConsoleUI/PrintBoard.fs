@@ -1,4 +1,4 @@
-module PrintBoard
+﻿module PrintBoard
 open Checkers
 
 let private getCellText (board: Board) (cell: Cell) =
@@ -16,13 +16,14 @@ let private getRowLabel (row: Row) =
 
 let private checkerBoardList board =
     let rowRev = Row.List |> List.rev
-    [for row in rowRev do
-        printRowLabel row
+    [ for row in rowRev do
+        yield getRowLabel row
         for col in Column.List do
-            let cell = printCell board ({ Row = row; Column = col })
-            match col with
-            | H -> sprintf "%s\n" cell
-            | _ -> cell ]
+            let cell = getCellText board ({ Row = row; Column = col })
+            yield
+                match col with
+                | H -> sprintf "%s\n" cell
+                | _ -> cell ]
 
 let private checkerBoard board =
     board
