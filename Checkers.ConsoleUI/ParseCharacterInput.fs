@@ -1,44 +1,56 @@
 ﻿module ParseCharacterInput
 
-open Checkers.CheckerTypes
+open Checkers
 
 let mapCharToDimension dList (cList: char list) (c: char) =
-    dList
-    |> List.zip cList
-    |> Map.ofList
-    |> Map.find c
-    
-let createCell (input: string) : Cell =
-    let flag = input.Length = 2
-    let mapToRow = mapCharToDimension Row.List ['1'..'8']
-    let mapToCol = mapCharToDimension Column.List ['a'..'h']
-    if flag then
-        try
-            let chars = input.ToCharArray()
-            let col = mapToCol (chars |> Array.head)
-            let row = mapToRow (chars |> Array.last)
-            { Column = col; Row = row }
-        with
-            // default bad square to handle error
-            | :? System.ArgumentException
-            | :? System.Collections.Generic.KeyNotFoundException ->
-                { Column = B; Row = One }   
-    else raise (System.ArgumentException("Input length much be exactly 2 to create a cell.")) 
-    
+    let mapped =
+        dList
+        |> List.zip cList
+        |> List.tryPick (fun (character, mapping) ->
+            if character = c then Some mapping
+            else None)
+    match mapped with
+    | Some mapped ->
+        Ok mapped
+    | None ->
+        c
+        |> sprintf "'%c' is not valid."
+        |> Error
+
+// no point in recomputing these every time
+let mapToRow = mapCharToDimension Row.List ['1'..'8']
+let mapToCol = mapCharToDimension Column.List ['a'..'h']
+
+let createCell (input: string) =
+    let chars = input.ToCharArray()
+    match chars with
+    | [| col; row |] ->
+        match mapToCol col, mapToRow row with
+        | Ok col, Ok row ->
+            Ok { Column = col; Row = row }
+        | Error err, _ | _, Error err ->
+            Error err
+    | _ ->
+        input
+        |> sprintf "'%s' was the incorrect length for input!"
+        |> Error
+
 let splitFullMove (input: string) =
-    let result = input.Split(' ')
-    match result.Length with
-    | 2 -> result
-    | _ -> invalidArg "result" "Incorrect number of moves in your input."
-    
+    match input.Split(' ') with
+    | [| fromCell; toCell |] when fromCell.Length <> 2 || toCell.Length <> 2 ->
+        Error "Input length much be exactly 2 to create a cell"
+    | [| fromCell; toCell |] ->
+        Ok (fromCell, toCell)
+    | _ ->
+        Error "Incorrect number of moves in your input. Syntax: From To (example: A3 B3)"
+
 let createAttemptedMove (input: string) =
-    try
-        let moves = splitFullMove input
-        let start = createCell (moves |> Array.head)
-        let target = createCell (moves |> Array.last)
-        { FromCell = start; ToCell = target }
-    with
-    // default bad attempted move to handle error
-    | :? System.ArgumentException 
-    | :? System.Collections.Generic.KeyNotFoundException ->
-        { FromCell = { Column = B; Row = One }; ToCell = { Column = B; Row = One } }   
+    input
+    |> splitFullMove
+    |> Result.bind (fun (start, target) ->
+        match createCell start, createCell target with
+        | Ok start, Ok target ->
+            Ok { FromCell = start; ToCell = target }
+        | Error err, _ | _, Error err ->
+            Error err
+    )
