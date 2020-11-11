@@ -168,29 +168,27 @@ let validateMove (gameState: GameState) (attemptedMove: AttemptedMove) =
 
 //check if current piece has any additional options to take a piece
 let validateAdditionalCaptures gameState move =
-    let validateMoveTest moveResult =
-        moveResult
-        |> Result.bind (validateMoveToEmptyCell gameState)
+    let validateMoveTest move =
+        move
+        |> validateMoveToEmptyCell gameState
         |> Result.bind validMoveShape
         |> Result.bind (validateJumpOverPiece gameState)
 
-    let (color, rank) = move.Piece
     let targetCellOptions = findCellOptions move.ToCell move.Piece
-
-    //failwithf "%A" targetCellOptions
 
     let resultOptions =
         targetCellOptions
-        //map cell list on to attempted moves
-        |> List.map (fun cell -> { FromCell = move.ToCell; ToCell = cell })
         //map attempted moves on to Moves
-        |> List.map (fun attemptedMove -> { Piece = (color, rank); FromCell = attemptedMove.FromCell; ToCell = attemptedMove.ToCell; CaptureType = Capture })
-        //map Moves on to Result<Move, string> using validation
-        |> List.map (fun move -> validateMoveTest (Ok move))
+        |> List.map (fun cell ->
+            {
+                Piece = move.Piece
+                FromCell = move.ToCell
+                ToCell = cell
+                CaptureType = Capture
+            }
+            |> validateMoveTest)
         //remove any Moves that are invalid
         |> List.filter (fun result -> match result with | Ok _ -> true | Error _ -> false)
-
-    //failwithf "%A" resultOptions
 
     //If there are no remaining valid Moves, then false, otherwise true
     match resultOptions.Length with
