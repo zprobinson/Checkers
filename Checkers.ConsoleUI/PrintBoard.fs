@@ -29,7 +29,7 @@ let private checkerBoard board =
     |> checkerBoardList
     |> String.concat ""
 
-let private bottomPadding length =
+let private padding length =
     String.replicate length " "
 
 let private columnBorderBuilder str list =
@@ -43,12 +43,11 @@ let private columnLabelBuilder list =
     |> String.concat ""
 
 let private bottomBorder =
-    bottomPadding 6 + columnBorderBuilder "___ " Column.List + "\n" +
-    bottomPadding 6 + columnLabelBuilder Column.List + "\n\n"
+    padding 6 + columnBorderBuilder "___ " Column.List + "\n" +
+    padding 6 + columnLabelBuilder Column.List + "\n\n"
 
 let printBoard (board: Board) =
-    (checkerBoard board) +
-    bottomBorder
+    (checkerBoard board) + bottomBorder
 
 let printPrompt =
     "Please enter moves in the following format: A3 B4 (case insensitive)"
