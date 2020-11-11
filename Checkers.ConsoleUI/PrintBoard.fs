@@ -25,19 +25,19 @@ let private checkerBoardList board =
             | _ -> sprintf "%s"   cell ]
 
 let private checkerBoard board =
-    (checkerBoardList board) |> List.reduce (+)
+    (checkerBoardList board) |> String.concat ""
 
 let private bottomPadding length =
     String.replicate length " "
 
 let private columnBorderBuilder str list =
     [ for _ in list do yield str ]
-    |> List.reduce (+)
+    |> String.concat ""
 
 let private columnLabelBuilder list =
     [for item in list do
         sprintf " %A  " item]
-    |> List.reduce (+)
+    |> String.concat ""
 
 let private bottomBorder =
     bottomPadding 6 + columnBorderBuilder "___ " Column.List + "\n" +
