@@ -145,17 +145,15 @@ let findCellOptions (start: Cell) (piece: Checker) =
     |> List.map (fun (col, row) -> { Column = Column.List.[col]; Row = Row.List.[row] })    // map remaining options on to a Cell list
 
 //kings a piece
-let validatePiecePromotion move =
+let checkPiecePromotion move =
     let color = fst move.Piece
-    match color with
-    | Red ->
-        match move.ToCell.Row with
-        | One -> Ok { move with Piece = (Red, King) }
-        | _ -> Ok move
-    | Black ->
-        match move.ToCell.Row with
-        | Eight -> Ok { move with Piece = (Black, King) }
-        | _ -> Ok move
+    match color, move.ToCell.Row with
+    | Red, One ->
+        { move with Piece = (Red, King) }
+    | Black, Eight ->
+        { move with Piece = (Black, King) }
+    | _, _ ->
+        move
 
 //run the attempted move through the validation suite
 let validateMove (gameState: GameState) (attemptedMove: AttemptedMove) =
@@ -165,7 +163,7 @@ let validateMove (gameState: GameState) (attemptedMove: AttemptedMove) =
     |> Result.bind (validateMoveToEmptyCell gameState)
     |> Result.bind validMoveShape
     |> Result.bind (validateJumpOverPiece gameState)
-    |> Result.bind validatePiecePromotion
+    |> Result.map checkPiecePromotion
 
 //check if current piece has any additional options to take a piece
 let validateAdditionalCaptures gameState move =
