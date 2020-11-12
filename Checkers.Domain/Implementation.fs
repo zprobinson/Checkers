@@ -2,6 +2,7 @@
 
 module Implementation =
     open Validation
+    open GameState
 
     //updates board by returning new board with updated piece locations
     let updateBoard (board: Board) (move: Move) =
