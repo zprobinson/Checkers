@@ -3,6 +3,7 @@
 open Checkers
 
 let mapCharToDimension dList (cList: char list) (c: char) =
+
     let mapped =
         dList
         |> List.zip cList
