@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Checkers.Domain.fsproj" />
+    <ProjectReference Include="..\Checkers.Domain\Checkers.Domain.fsproj" />
   </ItemGroup>
 
 </Project>

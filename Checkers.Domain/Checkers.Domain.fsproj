@@ -1,15 +1,12 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
-
   <ItemGroup>
-    <Compile Include="CheckerTypes.fs" />
-    <Compile Include="CheckerValidation.fs" />
+    <Compile Include="Types.fs" />
+    <Compile Include="Validation.fs" />
     <Compile Include="Initialization.fs" />
     <Compile Include="Implementation.fs" />
     <Content Include="DomainScratch.txt" />
   </ItemGroup>
-
 </Project>

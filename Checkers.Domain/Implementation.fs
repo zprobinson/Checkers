@@ -1,8 +1,7 @@
 ﻿namespace Checkers
 
-module Implementation = 
-    open CheckerTypes
-    open CheckerValidation
+module Implementation =
+    open Validation
 
     //updates board by returning new board with updated piece locations
     let updateBoard (board: Board) (move: Move) =
@@ -10,13 +9,11 @@ module Implementation =
         match isCapture with
         | Capture ->
             board
-                .Add((</>) move.FromCell move.ToCell, None)
-                .Add(move.FromCell, None)
-                .Add(move.ToCell, Some move.Piece)
+            |> Map.add (move.FromCell </> move.ToCell) None
         | NoCapture ->
             board
-                .Add(move.FromCell, None)
-                .Add(move.ToCell, Some move.Piece)
+        |> Map.add move.FromCell None
+        |> Map.add move.ToCell (Some move.Piece)
 
     //if there was a capture, keeps the same player's turn.
     let updatePlayerTurn gameState move =
@@ -27,23 +24,23 @@ module Implementation =
             | Red -> Black
 
         match move.CaptureType with
-        | Capture -> 
+        | Capture ->
             if validateAdditionalCaptures gameState move then
                 currentColor
-            else 
+            else
                 changeColor
         | NoCapture ->
             changeColor
 
     //validates the move and returns a new game state
-    let updateGame (currentState: GameState) (attemptedMove: AttemptedMove) = 
+    let updateGame (currentState: GameState) (attemptedMove: Result<AttemptedMove, string>) =
         //check if current gamestate is a completed game
         let validatedGameState = validateEndOfGame currentState
         let validateMoveCurried = validateMove validatedGameState
 
         match validatedGameState.GameStatus with
         | InProgress ->
-            match (validateMoveCurried attemptedMove) with
+            match Result.bind validateMoveCurried attemptedMove with
             | Ok move ->
                 //check if last move ended the game and update message
                 validateEndOfGame
@@ -53,7 +50,7 @@ module Implementation =
                         Message = "" }
             | Error msg ->
                 { currentState with Message = msg }
-        | Completed -> 
+        | Completed ->
             validatedGameState
 
 
